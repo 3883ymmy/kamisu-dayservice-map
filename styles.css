@@ -213,6 +213,17 @@ h2 { margin-bottom: 0; font-size: 1.2rem; }
   font-size: .9rem;
 }
 
+.phone-link {
+  color: #1f62b8;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.phone-link:focus,
+.phone-link:hover {
+  text-decoration: underline;
+}
+
 .facility-card .distance {
   margin-bottom: 0;
   font-weight: 800;
