@@ -18,14 +18,23 @@
 - 18施設すべてを使った直線距離計算
 - 背景地図に座標を重ねるためのWeb Mercator変換
 - 地図の拡大・縮小・ドラッグ移動の土台
+- 画面表示用ラスタ地図と印刷用ベクター地図を分ける構成
+
+## 地図ファイル
+
+- `assets/kamisu-map.png`：通常の画面表示で使用するラスタ背景地図
+- `assets/kamisu-map-print.svg`：印刷時のみ使用するベクター背景地図
+
+施設位置、自宅位置、検索結果などのマーカーは背景地図へ固定せず、Webアプリ側で動的に重ねて表示します。
 
 ## 次の工程
 
-1. 作成した神栖市全図を `assets/kamisu-map.png` として追加
-2. 背景地図の正確な north / south / west / east を `config.js` に設定
-3. 個人住所の扱いを確認したうえで住所検索サービスを選定・接続
-4. 実機iPadで表示・印刷をテスト
-5. GitHub Pagesで公開
+1. 画面表示用の `assets/kamisu-map.png` を追加
+2. 印刷用の `assets/kamisu-map-print.svg` を追加
+3. 背景地図の正確な north / south / west / east を `config.js` に設定
+4. 個人住所の扱いを確認したうえで住所検索サービスを選定・接続
+5. 実機iPadで表示・印刷をテスト
+6. GitHub Pagesで公開
 
 ## 掲載情報の出典・更新方針
 
