@@ -21,7 +21,7 @@
 
 ## 次の工程
 
-1. Workウオで作成した神栖市全図を `assets/kamisu-map.png` として追加
+1. 作成した神栖市全図を `assets/kamisu-map.png` として追加
 2. 背景地図の正確な north / south / west / east を `config.js` に設定
 3. 個人住所の扱いを確認したうえで住所検索サービスを選定・接続
 4. 実機iPadで表示・印刷をテスト
