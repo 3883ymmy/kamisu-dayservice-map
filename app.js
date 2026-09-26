@@ -248,7 +248,54 @@ currentLocationButton.addEventListener("click", () => {
   );
 });
 
-printButton.addEventListener("click", () => window.print());
+async function switchMapForPrint() {
+  const printSource = APP_CONFIG.printMapImage;
+  if (!printSource || printSource === APP_CONFIG.mapImage) return true;
+
+  const previousSource = mapImage.getAttribute("src") || APP_CONFIG.mapImage;
+
+  try {
+    mapImage.src = printSource;
+
+    if (typeof mapImage.decode === "function") {
+      await mapImage.decode();
+    } else if (!mapImage.complete) {
+      await new Promise((resolve, reject) => {
+        mapImage.addEventListener("load", resolve, { once: true });
+        mapImage.addEventListener("error", reject, { once: true });
+      });
+    }
+
+    mapImage.dataset.screenSource = previousSource;
+    return true;
+  } catch (error) {
+    console.error(error);
+    mapImage.src = previousSource;
+    statusEl.textContent = "印刷用の高精細地図を読み込めなかったため、画面表示用の地図で印刷します。";
+    return false;
+  }
+}
+
+function restoreScreenMap() {
+  const screenSource = mapImage.dataset.screenSource || APP_CONFIG.mapImage;
+  if (mapImage.getAttribute("src") !== screenSource) {
+    mapImage.src = screenSource;
+  }
+  delete mapImage.dataset.screenSource;
+}
+
+printButton.addEventListener("click", async () => {
+  printButton.disabled = true;
+  statusEl.textContent = "印刷用の高精細地図を準備しています…";
+
+  await switchMapForPrint();
+
+  statusEl.textContent = "印刷画面を開きます。";
+  window.print();
+  printButton.disabled = false;
+});
+
+window.addEventListener("afterprint", restoreScreenMap);
 zoomInButton.addEventListener("click", () => changeZoom(1.25));
 zoomOutButton.addEventListener("click", () => changeZoom(0.8));
 resetMapButton.addEventListener("click", resetMap);
