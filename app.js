@@ -84,11 +84,18 @@ function renderNearestFacilities(facilities) {
     const address = document.createElement("p");
     address.textContent = facility.address;
 
+    const phone = document.createElement("p");
+    const phoneLink = document.createElement("a");
+    phoneLink.className = "phone-link";
+    phoneLink.href = `tel:${facility.phone.replace(/-/g, "")}`;
+    phoneLink.textContent = `電話 ${facility.phone}`;
+    phone.append(phoneLink);
+
     const distance = document.createElement("p");
     distance.className = "distance";
     distance.textContent = `直線距離 約${facility.distanceKm.toFixed(1)} km`;
 
-    card.append(rank, name, address, distance);
+    card.append(rank, name, address, phone, distance);
     nearestList.append(card);
   });
 }
