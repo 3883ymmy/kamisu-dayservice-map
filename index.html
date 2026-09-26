@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f7f8fa">
+  <title>神栖市 放課後等デイサービス検索</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app">
+    <header class="hero">
+      <div>
+        <p class="kicker">神栖市</p>
+        <h1>放課後等デイサービス検索</h1>
+        <p class="lead">住所を検索して、自宅位置と近隣の放課後等デイサービスを確認します。</p>
+      </div>
+      <button id="printButton" class="button button-subtle" type="button">印刷</button>
+    </header>
+
+    <section class="panel search-panel" aria-labelledby="searchTitle">
+      <h2 id="searchTitle">自宅住所を入力</h2>
+      <form id="addressForm" class="search-form">
+        <label class="sr-only" for="addressInput">住所</label>
+        <input
+          id="addressInput"
+          name="address"
+          type="text"
+          autocomplete="street-address"
+          placeholder="例：神栖市筒井○○○○"
+          required
+        >
+        <button class="button button-primary" type="submit">検索</button>
+      </form>
+      <p id="status" class="status" aria-live="polite">住所はGitHubへ保存しません。</p>
+    </section>
+
+    <section class="panel" aria-labelledby="mapTitle">
+      <div class="section-head">
+        <div>
+          <p class="kicker">MAP</p>
+          <h2 id="mapTitle">地図</h2>
+        </div>
+        <div class="map-actions">
+          <button id="zoomOutButton" class="icon-button" type="button" aria-label="縮小">−</button>
+          <button id="zoomInButton" class="icon-button" type="button" aria-label="拡大">＋</button>
+          <button id="resetMapButton" class="button button-subtle" type="button">全体表示</button>
+        </div>
+      </div>
+
+      <div id="mapViewport" class="map-viewport">
+        <div id="mapStage" class="map-stage">
+          <img id="mapImage" class="map-image" alt="神栖市全図" draggable="false">
+          <div id="facilityMarkerLayer" class="marker-layer" aria-hidden="true"></div>
+          <div id="homeMarkerLayer" class="marker-layer" aria-hidden="true"></div>
+        </div>
+        <div id="mapPlaceholder" class="map-placeholder">
+          <strong>背景地図を待っています</strong>
+          <span>Workウオの神栖市全図画像と座標範囲を追加すると、ここが地図になります。</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="nearestTitle">
+      <div class="section-head">
+        <div>
+          <p class="kicker">NEAREST</p>
+          <h2 id="nearestTitle">最寄りの3施設</h2>
+        </div>
+      </div>
+      <div id="nearestList" class="nearest-grid">
+        <p class="empty">住所検索後、近い順に3施設を表示します。</p>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>距離は直線距離です。利用可否・送迎範囲・空き状況は各施設へ確認してください。</p>
+    </footer>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="facilities.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
