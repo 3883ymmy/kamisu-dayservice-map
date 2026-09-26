@@ -1,9 +1,15 @@
 const APP_CONFIG = {
   /*
-    Workウオの背景地図を書き出したら、このパスへ置きます。
+    通常の画面表示で使用するラスタ背景地図です。
     GitHub Pagesではリポジトリ内の相対パスで読み込みます。
   */
   mapImage: "assets/kamisu-map.png",
+
+  /*
+    印刷時のみ使用するベクター背景地図です。
+    通常表示では読み込まず、印刷操作時に切り替えます。
+  */
+  printMapImage: "assets/kamisu-map-print.svg",
 
   /*
     背景地図の実際の緯度経度範囲を設定します。
