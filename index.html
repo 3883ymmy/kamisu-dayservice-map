@@ -13,13 +13,14 @@
       <div>
         <p class="kicker">神栖市</p>
         <h1>放課後等デイサービス検索</h1>
-        <p class="lead">住所を検索して、自宅位置と近隣の放課後等デイサービスを確認します。</p>
+        <p class="lead">現在地または住所から、近隣の放課後等デイサービスを確認します。</p>
       </div>
       <button id="printButton" class="button button-subtle" type="button">印刷</button>
     </header>
 
     <section class="panel search-panel" aria-labelledby="searchTitle">
-      <h2 id="searchTitle">自宅住所を入力</h2>
+      <h2 id="searchTitle">現在地または住所から探す</h2>
+      <div class="location-actions"><button id="currentLocationButton" class="button button-location" type="button">現在地を使う</button><span class="or-text">または</span></div>
       <form id="addressForm" class="search-form">
         <label class="sr-only" for="addressInput">住所</label>
         <input
@@ -32,7 +33,7 @@
         >
         <button class="button button-primary" type="submit">検索</button>
       </form>
-      <p id="status" class="status" aria-live="polite">住所はGitHubへ保存しません。</p>
+      <p id="status" class="status" aria-live="polite">現在地・住所はGitHubへ保存しません。</p>
     </section>
 
     <section class="panel" aria-labelledby="mapTitle">
@@ -69,7 +70,7 @@
         </div>
       </div>
       <div id="nearestList" class="nearest-grid">
-        <p class="empty">住所検索後、近い順に3施設を表示します。</p>
+        <p class="empty">現在地または住所を指定すると、近い順に3施設を表示します。</p>
       </div>
     </section>
 
