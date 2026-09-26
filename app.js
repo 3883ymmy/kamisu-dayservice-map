@@ -1,5 +1,6 @@
 const addressForm = document.getElementById("addressForm");
 const addressInput = document.getElementById("addressInput");
+const currentLocationButton = document.getElementById("currentLocationButton");
 const statusEl = document.getElementById("status");
 const nearestList = document.getElementById("nearestList");
 const printButton = document.getElementById("printButton");
@@ -143,10 +144,15 @@ function renderFacilityMarkers() {
     });
 }
 
-function renderHomeMarker(latitude, longitude) {
+function renderHomeMarker(latitude, longitude, label = "指定した位置") {
   homeMarkerLayer.replaceChildren();
-  const marker = createMarker(latitude, longitude, "home", "検索した住所");
+  const marker = createMarker(latitude, longitude, "home", label);
   if (marker) homeMarkerLayer.append(marker);
+}
+
+function showNearbyFacilities(latitude, longitude, label) {
+  renderHomeMarker(latitude, longitude, label);
+  renderNearestFacilities(getNearestFacilities(latitude, longitude, 3));
 }
 
 function applyMapTransform() {
@@ -193,8 +199,7 @@ addressForm.addEventListener("submit", async (event) => {
   try {
     const { latitude, longitude } = await geocodeAddress(address);
 
-    renderHomeMarker(latitude, longitude);
-    renderNearestFacilities(getNearestFacilities(latitude, longitude, 3));
+    showNearbyFacilities(latitude, longitude, "検索した住所");
 
     statusEl.textContent = `「${address}」の周辺施設を表示しました。`;
   } catch (error) {
@@ -207,6 +212,40 @@ addressForm.addEventListener("submit", async (event) => {
     console.error(error);
     statusEl.textContent = "住所を検索できませんでした。";
   }
+});
+
+currentLocationButton.addEventListener("click", () => {
+  if (!navigator.geolocation) {
+    statusEl.textContent = "この端末またはブラウザでは現在地を取得できません。";
+    return;
+  }
+
+  currentLocationButton.disabled = true;
+  statusEl.textContent = "現在地を取得しています…";
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
+      const accuracy = Math.max(1, Math.round(position.coords.accuracy));
+      showNearbyFacilities(latitude, longitude, "現在地");
+      statusEl.textContent = "現在地から近い3施設を表示しました（位置精度の目安 ±" + accuracy + "m）。";
+      currentLocationButton.disabled = false;
+    },
+    (error) => {
+      if (error.code === 1) {
+        statusEl.textContent = "現在地の利用が許可されていません。端末の位置情報設定をご確認ください。";
+      } else if (error.code === 2) {
+        statusEl.textContent = "現在地を取得できませんでした。通信環境や位置情報設定をご確認ください。";
+      } else if (error.code === 3) {
+        statusEl.textContent = "現在地の取得に時間がかかりすぎました。もう一度お試しください。";
+      } else {
+        statusEl.textContent = "現在地を取得できませんでした。";
+      }
+      currentLocationButton.disabled = false;
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+  );
 });
 
 printButton.addEventListener("click", () => window.print());
