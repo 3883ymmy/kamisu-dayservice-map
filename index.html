@@ -111,7 +111,7 @@ const zoomOutButton = document.getElementById("zoomOutButton");
 const resetMapButton = document.getElementById("resetMapButton");
 let mapState = { scale: 1, x: 0, y: 0 };
 let baseStage = { left: 0, top: 0, width: 0, height: 0 };
-let dragState = null, pinchState = null, placementMode = false, pointerMoved = false;
+let dragState = null, pinchState = null, placementMode = false, pointerMoved = false, gestureHadMultiplePointers = false;
 let currentSelection = null;
 let printImageReady = false;
 let printPreparationToken = 0;
@@ -190,7 +190,7 @@ async function geocodeAddress(address) {
   const localCandidate=candidates.find(candidate=>isInsideConfiguredSearchArea(candidate.latitude,candidate.longitude)); if(!localCandidate) throw new Error('GEOCODER_OUTSIDE_AREA');
   return localCandidate;
 }
-addressForm.addEventListener('submit', async event => { event.preventDefault(); const address=addressInput.value.trim(); if(!address){ statusEl.textContent='住所を入力するか、地図上で仮位置を指定してください。'; return; } try { const {latitude,longitude,matchedAddress} = await geocodeAddress(address); const point = latLonToPercent(latitude, longitude); const nearest=getNearestFacilities(latitude, longitude, 3); renderHomeMarker(point.x, point.y); renderNearestFacilities(nearest); setCurrentSelection(point,nearest,address); focusOnPoints([point, ...nearest.map(f=>({x:f.mapX,y:f.mapY}))]); statusEl.textContent=`「${matchedAddress}」付近から近い3施設を表示しました。`; } catch(error){ if(error.message==='GEOCODER_NOT_CONFIGURED'){ statusEl.textContent='住所検索サービスが設定されていません。'; return; } if(error.message==='GEOCODER_NO_RESULTS'){ statusEl.textContent='住所を特定できませんでした。町名・番地を含めて入力してください。'; return; } if(error.message==='GEOCODER_OUTSIDE_AREA'){ statusEl.textContent='神栖市周辺の住所として確認できませんでした。入力内容をご確認ください。'; return; } console.error(error); statusEl.textContent='住所検索サービスへ接続できませんでした。時間をおいて再度お試しください。'; } });
+addressForm.addEventListener('submit', async event => { event.preventDefault(); const address=addressInput.value.trim(); if(!address){ const action=placementActionWord(); statusEl.textContent=`住所を入力するか、「地図を${action}して位置を設定」を使ってください。`; return; } try { const {latitude,longitude,matchedAddress} = await geocodeAddress(address); const point = latLonToPercent(latitude, longitude); const nearest=getNearestFacilities(latitude, longitude, 3); renderHomeMarker(point.x, point.y); renderNearestFacilities(nearest); setCurrentSelection(point,nearest,address); focusOnPoints([point, ...nearest.map(f=>({x:f.mapX,y:f.mapY}))]); statusEl.textContent=`「${matchedAddress}」付近から近い3施設を表示しました。`; } catch(error){ if(error.message==='GEOCODER_NOT_CONFIGURED'){ statusEl.textContent='住所検索サービスが設定されていません。'; return; } if(error.message==='GEOCODER_NO_RESULTS'){ statusEl.textContent='住所を特定できませんでした。町名・番地を含めて入力してください。'; return; } if(error.message==='GEOCODER_OUTSIDE_AREA'){ statusEl.textContent='神栖市周辺の住所として確認できませんでした。入力内容をご確認ください。'; return; } console.error(error); statusEl.textContent='住所検索サービスへ接続できませんでした。時間をおいて再度お試しください。'; } });
 
 currentLocationButton.addEventListener('click', () => {
   if (!navigator.geolocation) {
@@ -206,6 +206,13 @@ currentLocationButton.addEventListener('click', () => {
       const latitude = position.coords.latitude;
       const longitude = position.coords.longitude;
       const accuracy = Math.max(1, Math.round(position.coords.accuracy));
+      if (!isInsideConfiguredSearchArea(latitude, longitude)) {
+        statusEl.textContent =
+          '現在地が神栖市周辺の検索範囲外です。神栖市内の住所を検索するか、地図上で位置を指定してください。';
+        currentLocationButton.disabled = false;
+        return;
+      }
+
       const point = latLonToPercent(latitude, longitude);
       const nearest = getNearestFacilities(latitude, longitude, 3);
 
@@ -251,9 +258,92 @@ printButton.addEventListener('click', () => {
   window.print();
 });
 zoomInButton.addEventListener('click', () => changeZoom(1.3)); zoomOutButton.addEventListener('click', () => changeZoom(1/1.3)); resetMapButton.addEventListener('click', resetMap);
-mapViewport.addEventListener('pointerdown', event => { activePointers.set(event.pointerId, {x:event.clientX, y:event.clientY}); pointerMoved=false; mapViewport.setPointerCapture(event.pointerId); if(activePointers.size===2){ dragState=null; const pts=[...activePointers.values()]; pinchState={distance:Math.hypot(pts[0].x-pts[1].x, pts[0].y-pts[1].y), scale:mapState.scale, x:mapState.x, y:mapState.y}; return; } if(!placementMode && mapState.scale>1){ dragState={pointerId:event.pointerId, startX:event.clientX, startY:event.clientY, originX:mapState.x, originY:mapState.y}; } });
-mapViewport.addEventListener('pointermove', event => { if(!activePointers.has(event.pointerId)) return; const prev=activePointers.get(event.pointerId); if(Math.hypot(event.clientX-prev.x, event.clientY-prev.y)>3) pointerMoved=true; activePointers.set(event.pointerId, {x:event.clientX,y:event.clientY}); if(activePointers.size===2 && pinchState){ const pts=[...activePointers.values()]; const distance=Math.hypot(pts[0].x-pts[1].x, pts[0].y-pts[1].y); if(!pinchState.distance) return; const centerClientX=(pts[0].x+pts[1].x)/2, centerClientY=(pts[0].y+pts[1].y)/2; const rect=mapViewport.getBoundingClientRect(); const centerX=centerClientX-rect.left-baseStage.left, centerY=centerClientY-rect.top-baseStage.top; const nextScale=Math.min(6,Math.max(1,pinchState.scale*distance/pinchState.distance)); const ratio=nextScale/pinchState.scale; mapState.scale=nextScale; mapState.x=centerX-(centerX-mapState.x)*ratio; mapState.y=centerY-(centerY-mapState.y)*ratio; applyMapTransform(); return; } if(dragState && dragState.pointerId===event.pointerId){ mapState.x=dragState.originX + event.clientX - dragState.startX; mapState.y=dragState.originY + event.clientY - dragState.startY; applyMapTransform(); } });
-function endPointer(event) { const wasPlacement = placementMode && !pointerMoved && activePointers.size===1; activePointers.delete(event.pointerId); dragState=null; if(activePointers.size<2) pinchState=null; if(wasPlacement) setHomeFromMap(event.clientX,event.clientY); }
+mapViewport.addEventListener('pointerdown', event => {
+  if(activePointers.size===0){
+    pointerMoved=false;
+    gestureHadMultiplePointers=false;
+  }
+  activePointers.set(event.pointerId, {
+    x:event.clientX,
+    y:event.clientY,
+    startX:event.clientX,
+    startY:event.clientY
+  });
+  mapViewport.setPointerCapture(event.pointerId);
+
+  if(activePointers.size===2){
+    gestureHadMultiplePointers=true;
+    dragState=null;
+    const pts=[...activePointers.values()];
+    const rect=mapViewport.getBoundingClientRect();
+    const centerClientX=(pts[0].x+pts[1].x)/2;
+    const centerClientY=(pts[0].y+pts[1].y)/2;
+    pinchState={
+      distance:Math.hypot(pts[0].x-pts[1].x, pts[0].y-pts[1].y),
+      scale:mapState.scale,
+      x:mapState.x,
+      y:mapState.y,
+      centerX:centerClientX-rect.left-baseStage.left,
+      centerY:centerClientY-rect.top-baseStage.top
+    };
+    return;
+  }
+
+  if(!placementMode && mapState.scale>1){
+    dragState={
+      pointerId:event.pointerId,
+      startX:event.clientX,
+      startY:event.clientY,
+      originX:mapState.x,
+      originY:mapState.y
+    };
+  }
+});
+mapViewport.addEventListener('pointermove', event => {
+  if(!activePointers.has(event.pointerId)) return;
+  const prev=activePointers.get(event.pointerId);
+  if(Math.hypot(event.clientX-prev.startX, event.clientY-prev.startY)>6) pointerMoved=true;
+  activePointers.set(event.pointerId, {
+    ...prev,
+    x:event.clientX,
+    y:event.clientY
+  });
+
+  if(activePointers.size===2 && pinchState){
+    const pts=[...activePointers.values()];
+    const distance=Math.hypot(pts[0].x-pts[1].x, pts[0].y-pts[1].y);
+    if(!pinchState.distance) return;
+    const centerClientX=(pts[0].x+pts[1].x)/2;
+    const centerClientY=(pts[0].y+pts[1].y)/2;
+    const rect=mapViewport.getBoundingClientRect();
+    const centerX=centerClientX-rect.left-baseStage.left;
+    const centerY=centerClientY-rect.top-baseStage.top;
+    const nextScale=Math.min(6,Math.max(1,pinchState.scale*distance/pinchState.distance));
+    const ratio=nextScale/pinchState.scale;
+    mapState.scale=nextScale;
+    mapState.x=centerX-(pinchState.centerX-pinchState.x)*ratio;
+    mapState.y=centerY-(pinchState.centerY-pinchState.y)*ratio;
+    applyMapTransform();
+    return;
+  }
+
+  if(dragState && dragState.pointerId===event.pointerId){
+    mapState.x=dragState.originX + event.clientX - dragState.startX;
+    mapState.y=dragState.originY + event.clientY - dragState.startY;
+    applyMapTransform();
+  }
+});
+function endPointer(event) {
+  const wasPlacement =
+    placementMode &&
+    !pointerMoved &&
+    !gestureHadMultiplePointers &&
+    activePointers.size===1;
+  activePointers.delete(event.pointerId);
+  dragState=null;
+  if(activePointers.size<2) pinchState=null;
+  if(wasPlacement) setHomeFromMap(event.clientX,event.clientY);
+}
 mapViewport.addEventListener('pointerup', endPointer); mapViewport.addEventListener('pointercancel', endPointer); mapViewport.addEventListener('wheel', event => { event.preventDefault(); const rect=mapViewport.getBoundingClientRect(); changeZoom(event.deltaY<0?1.12:0.9, event.clientX-rect.left, event.clientY-rect.top); }, {passive:false});
 window.addEventListener('resize', layoutMapStage);
 layoutMapStage(); renderFacilityMarkers(); resetMap(); updatePlacementWording();
