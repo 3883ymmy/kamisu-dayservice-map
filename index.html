@@ -320,6 +320,23 @@ function updatePlacementWording() {
   placementHint.textContent=`地図上の自宅・基準地点を${action}`;
 }
 placeHomeButton.addEventListener('click', () => { placementMode=!placementMode; mapViewport.classList.toggle('placement-mode', placementMode); placementHint.hidden=!placementMode; const action=placementActionWord(); placeHomeButton.textContent=placementMode ? '位置設定を中止' : `地図を${action}して位置を設定`; statusEl.textContent=placementMode ? `地図上で基準にしたい地点を${action}してください。その地点から近い3施設を表示します。` : '位置設定を中止しました。'; });
+function triggerPrintDialog() {
+  const isIOS =
+    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+  if(isIOS && typeof document.execCommand === 'function'){
+    try {
+      const opened = document.execCommand('print', false, null);
+      if(opened !== false) return;
+    } catch(error) {
+      console.warn('Safari print fallback failed', error);
+    }
+  }
+
+  window.print();
+}
+
 printButton.addEventListener('click', () => {
   if(!currentSelection){ statusEl.textContent='先に住所・現在地・地図上の位置のいずれかを指定してください。'; return; }
   if(!printImageReady){
@@ -327,7 +344,7 @@ printButton.addEventListener('click', () => {
     statusEl.textContent='印刷用のベクター地図を準備しています。少し待ってからもう一度押してください。';
     return;
   }
-  window.print();
+  triggerPrintDialog();
 });
 zoomInButton.addEventListener('click', () => changeZoom(1.3)); zoomOutButton.addEventListener('click', () => changeZoom(1/1.3)); resetMapButton.addEventListener('click', resetMap);
 mapViewport.addEventListener('pointerdown', event => {
