@@ -41,7 +41,7 @@ h1{margin-bottom:4px;font-size:1.45rem}
   border:1px solid #ccd3da;background:#dfe8f8;
 }
 .map-stage{position:absolute;inset:0}
-.map-stage img{
+.map-stage img,.map-stage canvas{
   position:absolute;inset:0;display:block;
   width:100%;height:100%;user-select:none;-webkit-user-drag:none;
 }
@@ -125,6 +125,7 @@ h1{margin-bottom:4px;font-size:1.45rem}
     <div id="mapWrap" class="map-wrap">
       <div id="mapStage" class="map-stage">
         <img id="mapImage" alt="検索地点と近隣3施設の地図">
+        <canvas id="mapCanvas" hidden aria-label="検索地点と近隣3施設の地図"></canvas>
         <div id="facilityMarkerLayer" class="marker-layer"></div>
         <div id="homeMarkerLayer" class="marker-layer"></div>
       </div>
@@ -141,6 +142,15 @@ h1{margin-bottom:4px;font-size:1.45rem}
 <script>
 const PRINT_VECTOR_SOURCE='assets/kamisu-map-print.svg';
 const MAP_ASPECT_RATIO=6907/6095;
+const IS_PHONE=/iPhone|iPod|Android.*Mobile/i.test(navigator.userAgent);
+const USE_RASTER_PRINT=IS_PHONE;
+const RASTER_TILES={
+  z:4,
+  tileSize:512,
+  width:8192,
+  height:7229,
+  url:(x,y)=>`assets/tiles/4/${x}/${y}.webp`
+};
 
 const statusEl=document.getElementById('status');
 const backButton=document.getElementById('backButton');
@@ -150,6 +160,7 @@ const errorEl=document.getElementById('error');
 const searchLabel=document.getElementById('searchLabel');
 const mapStage=document.getElementById('mapStage');
 const mapImage=document.getElementById('mapImage');
+const mapCanvas=document.getElementById('mapCanvas');
 const facilityMarkerLayer=document.getElementById('facilityMarkerLayer');
 const homeMarkerLayer=document.getElementById('homeMarkerLayer');
 const loading=document.getElementById('loading');
@@ -188,41 +199,7 @@ function createMarker(x,y,type,text,title,offsetPx=0){
   return marker;
 }
 
-function renderSelection(){
-  searchLabel.textContent=`検索地点：${selection.label || '指定した位置'}`;
-
-  const crop=computePrintCrop(selection);
-  const zoom=100/crop.span;
-  mapStage.style.width=`${zoom*100}%`;
-  mapStage.style.height=`${zoom*100}%`;
-  mapStage.style.left=`${-(crop.x0/crop.span)*100}%`;
-  mapStage.style.top=`${-(crop.y0/crop.span)*100}%`;
-
-  homeMarkerLayer.replaceChildren();
-  facilityMarkerLayer.replaceChildren();
-
-  homeMarkerLayer.append(
-    createMarker(selection.point.x,selection.point.y,'home','','検索地点')
-  );
-
-  const duplicateCounts=new Map();
-  selection.nearest.forEach((facility,index)=>{
-    const key=`${facility.mapX.toFixed(4)},${facility.mapY.toFixed(4)}`;
-    const duplicateIndex=duplicateCounts.get(key)||0;
-    duplicateCounts.set(key,duplicateIndex+1);
-    const offsets=[0,-26,26,-52,52];
-    facilityMarkerLayer.append(
-      createMarker(
-        facility.mapX,
-        facility.mapY,
-        'facility',
-        String(index+1),
-        facility.name,
-        offsets[duplicateIndex] ?? duplicateIndex*26
-      )
-    );
-  });
-
+function renderNearestCards(){
   nearestGrid.replaceChildren();
   selection.nearest.forEach((facility,index)=>{
     const card=document.createElement('article');
@@ -248,8 +225,169 @@ function renderSelection(){
     card.append(rank,name,address,phone,distance);
     nearestGrid.append(card);
   });
+}
 
+function renderVectorSelection(){
+  const crop=computePrintCrop(selection);
+  const zoom=100/crop.span;
+  mapStage.style.width=`${zoom*100}%`;
+  mapStage.style.height=`${zoom*100}%`;
+  mapStage.style.left=`${-(crop.x0/crop.span)*100}%`;
+  mapStage.style.top=`${-(crop.y0/crop.span)*100}%`;
+
+  mapImage.hidden=false;
+  mapCanvas.hidden=true;
+  homeMarkerLayer.replaceChildren();
+  facilityMarkerLayer.replaceChildren();
+
+  homeMarkerLayer.append(
+    createMarker(selection.point.x,selection.point.y,'home','','検索地点')
+  );
+
+  const duplicateCounts=new Map();
+  selection.nearest.forEach((facility,index)=>{
+    const key=`${facility.mapX.toFixed(4)},${facility.mapY.toFixed(4)}`;
+    const duplicateIndex=duplicateCounts.get(key)||0;
+    duplicateCounts.set(key,duplicateIndex+1);
+    const offsets=[0,-26,26,-52,52];
+    facilityMarkerLayer.append(
+      createMarker(
+        facility.mapX,
+        facility.mapY,
+        'facility',
+        String(index+1),
+        facility.name,
+        offsets[duplicateIndex] ?? duplicateIndex*26
+      )
+    );
+  });
+}
+
+function loadTileImage(src){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    img.decoding='async';
+    img.onload=()=>resolve(img);
+    img.onerror=reject;
+    img.src=src;
+  });
+}
+
+async function buildRasterMap(){
+  const crop=computePrintCrop(selection);
+  const mapW=RASTER_TILES.width;
+  const mapH=RASTER_TILES.height;
+  const tileSize=RASTER_TILES.tileSize;
+
+  const sx=crop.x0/100*mapW;
+  const sy=crop.y0/100*mapH;
+  const sw=crop.span/100*mapW;
+  const sh=crop.span/100*mapH;
+
+  const outW=1800;
+  const outH=Math.round(outW/MAP_ASPECT_RATIO);
+  mapCanvas.width=outW;
+  mapCanvas.height=outH;
+
+  mapStage.style.inset='0';
+  mapStage.style.left='0';
+  mapStage.style.top='0';
+  mapStage.style.width='100%';
+  mapStage.style.height='100%';
+
+  mapImage.hidden=true;
+  mapCanvas.hidden=false;
+  homeMarkerLayer.replaceChildren();
+  facilityMarkerLayer.replaceChildren();
+
+  const ctx=mapCanvas.getContext('2d',{alpha:false});
+  ctx.fillStyle='#dfe8f8';
+  ctx.fillRect(0,0,outW,outH);
+
+  const x0=Math.max(0,Math.floor(sx/tileSize));
+  const x1=Math.min(Math.ceil(mapW/tileSize)-1,Math.floor((sx+sw-1)/tileSize));
+  const y0=Math.max(0,Math.floor(sy/tileSize));
+  const y1=Math.min(Math.ceil(mapH/tileSize)-1,Math.floor((sy+sh-1)/tileSize));
+
+  for(let y=y0;y<=y1;y++){
+    for(let x=x0;x<=x1;x++){
+      const img=await loadTileImage(RASTER_TILES.url(x,y));
+      const sourceX=x*tileSize;
+      const sourceY=y*tileSize;
+      const sourceW=Math.min(tileSize,mapW-sourceX);
+      const sourceH=Math.min(tileSize,mapH-sourceY);
+      const dx=(sourceX-sx)/sw*outW;
+      const dy=(sourceY-sy)/sh*outH;
+      const dw=sourceW/sw*outW;
+      const dh=sourceH/sh*outH;
+      ctx.drawImage(img,0,0,sourceW,sourceH,dx,dy,dw,dh);
+      img.src='';
+      await new Promise(resolve=>requestAnimationFrame(resolve));
+    }
+  }
+
+  const toCanvas=p=>({
+    x:(p.x-crop.x0)/crop.span*outW,
+    y:(p.y-crop.y0)/crop.span*outH
+  });
+
+  const drawCircle=(x,y,r,fill,text)=>{
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(x,y,r,0,Math.PI*2);
+    ctx.fillStyle='#fff';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x,y,r-5,0,Math.PI*2);
+    ctx.fillStyle=fill;
+    ctx.fill();
+    ctx.fillStyle='#fff';
+    ctx.font='700 30px -apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText(text,x,y+1);
+    ctx.restore();
+  };
+
+  const home=toCanvas(selection.point);
+  drawCircle(home.x,home.y,31,'#2569c7','★');
+
+  const duplicateCounts=new Map();
+  selection.nearest.forEach((facility,index)=>{
+    const key=`${facility.mapX.toFixed(4)},${facility.mapY.toFixed(4)}`;
+    const n=duplicateCounts.get(key)||0;
+    duplicateCounts.set(key,n+1);
+    const p=toCanvas({x:facility.mapX,y:facility.mapY});
+    const offsets=[0,-42,42,-84,84];
+    drawCircle(p.x+(offsets[n] ?? n*42),p.y,31,'#c83e35',String(index+1));
+  });
+
+  loading.hidden=true;
+  printButton.disabled=false;
+  printButton.textContent='印刷';
+  statusEl.textContent='スマホ向け高解像度地図の準備ができました。';
+}
+
+function renderSelection(){
+  searchLabel.textContent=`検索地点：${selection.label || '指定した位置'}`;
+  renderNearestCards();
   sheet.hidden=false;
+
+  if(USE_RASTER_PRINT){
+    loading.textContent='スマホ向け高解像度地図を準備しています…';
+    statusEl.textContent='スマホ向け高解像度地図を準備しています…';
+    buildRasterMap().catch(error=>{
+      console.error(error);
+      fail('印刷用地図を準備できませんでした。通信環境をご確認ください。');
+    });
+  }else{
+    renderVectorSelection();
+    loading.textContent='ベクター地図を読み込んでいます…';
+    statusEl.textContent='印刷用のベクター地図を読み込んでいます…';
+    requestAnimationFrame(()=>{
+      mapImage.src=PRINT_VECTOR_SOURCE;
+    });
+  }
 }
 
 function fail(message){
@@ -274,6 +412,7 @@ try{
 }
 
 mapImage.addEventListener('load',()=>{
+  if(USE_RASTER_PRINT) return;
   loading.hidden=true;
   printButton.disabled=false;
   printButton.textContent='印刷';
@@ -281,16 +420,9 @@ mapImage.addEventListener('load',()=>{
 });
 
 mapImage.addEventListener('error',()=>{
+  if(USE_RASTER_PRINT) return;
   fail('印刷用のベクター地図を読み込めませんでした。');
 });
-
-if(selection){
-  // Interactive page is already unloaded at this point, so iPhone has
-  // far more memory available for the large SVG.
-  requestAnimationFrame(()=>{
-    mapImage.src=PRINT_VECTOR_SOURCE;
-  });
-}
 
 backButton.addEventListener('click',()=>{
   history.back();
