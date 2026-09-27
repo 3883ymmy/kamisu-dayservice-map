@@ -24,10 +24,22 @@
   .marker-facility:hover .marker-tooltip{display:block}
   .marker-facility.tooltip-align-left .marker-tooltip{left:-4px;transform:none}
 } .marker-home{width:30px;height:30px;border:3px solid #fff;border-radius:50% 50% 50% 0;background:#2569c7;color:#fff;font-size:.85rem;transform:translate(-50%,-82%) rotate(-45deg)} .marker-home>span{transform:rotate(45deg)} .map-placeholder{position:absolute;inset:0;display:grid;place-content:center;gap:8px;padding:24px;text-align:center;color:#66717d;background:#edf0f3} .map-placeholder strong{color:#303a45} .map-placeholder[hidden], .placement-hint[hidden]{display:none!important} .placement-hint{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:5;padding:8px 12px;border-radius:999px;background:rgba(32,40,51,.88);color:#fff;font-size:.82rem;font-weight:800;pointer-events:none} .map-viewport.placement-mode{outline:4px solid rgba(185,74,63,.25);outline-offset:-4px} .map-note{margin:9px 0 0;color:#6b7580;font-size:.78rem}
-.nearest-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px} .facility-card{padding:14px;border:1px solid #d8dde3;border-radius:12px;background:#fff} .rank{display:inline-grid;place-items:center;width:30px;height:30px;margin-bottom:10px;border-radius:999px;background:#edf3fb;font-weight:850} .facility-card h3{margin-bottom:8px;font-size:1rem;line-height:1.45} .facility-card p{margin-bottom:6px;color:#626d78;font-size:.9rem} .facility-card .distance{margin-bottom:0;font-weight:800;color:#202833} .phone-link{display:inline-flex;align-items:center;justify-content:center;min-height:40px;margin:4px 0 8px;padding:0 12px;border:1px solid #b8c1cb;border-radius:9px;background:#f8fafc;color:#1f62b8;font-weight:750;text-decoration:none} .phone-link:active{background:#edf3fb} .empty{grid-column:1/-1;margin:0;padding:12px 0 2px;color:#66717d} .footer{color:#68737f;font-size:.78rem;line-height:1.6} .footer p{margin-bottom:4px} .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.nearest-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px} .facility-card{padding:14px;border:1px solid #d8dde3;border-radius:12px;background:#fff} .rank{display:inline-grid;place-items:center;width:30px;height:30px;margin-bottom:10px;border-radius:999px;background:#edf3fb;font-weight:850} .facility-card h3{margin-bottom:8px;font-size:1rem;line-height:1.45} .facility-card p{margin-bottom:6px;color:#626d78;font-size:.9rem} .facility-card .distance{margin-bottom:0;font-weight:800;color:#202833} .phone-link{display:inline-flex;align-items:center;justify-content:center;min-height:40px;margin:4px 0 8px;padding:0 12px;border:1px solid #b8c1cb;border-radius:9px;background:#f8fafc;color:#1f62b8;font-weight:750;text-decoration:none} .phone-link:active{background:#edf3fb} .empty{grid-column:1/-1;margin:0;padding:12px 0 2px;color:#66717d}
+.facility-directory{margin-top:14px}
+.facility-directory summary{display:flex;align-items:center;justify-content:space-between;min-height:48px;padding:0 14px;border:1px solid #cbd2da;border-radius:10px;background:#f8fafc;color:#25303b;font-weight:800;cursor:pointer;list-style:none}
+.facility-directory summary::-webkit-details-marker{display:none}
+.facility-directory summary::after{content:'＋';font-size:1.2rem;line-height:1}
+.facility-directory[open] summary::after{content:'−'}
+.all-facilities-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.all-facility-row{display:grid;grid-template-columns:38px minmax(0,1fr);gap:10px;padding:12px;border:1px solid #d8dde3;border-radius:11px;background:#fff}
+.all-facility-number{display:grid;place-items:center;width:32px;height:32px;border-radius:999px;background:#edf3fb;font-weight:900}
+.all-facility-row h3{margin:0 0 5px;font-size:.95rem;line-height:1.4}
+.all-facility-row p{margin:0 0 4px;color:#626d78;font-size:.84rem;line-height:1.45}
+.all-facility-row a{color:#1f62b8;font-weight:750;text-decoration:none}
+ .footer{color:#68737f;font-size:.78rem;line-height:1.6} .footer p{margin-bottom:4px} .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .print-map{display:none;overflow:hidden;background:#dfe8f8} .print-map-stage{position:absolute;inset:0} .print-map img{position:absolute;inset:0;display:block;width:100%;height:100%} .print-marker-layer{position:absolute;inset:0;pointer-events:none} .print-search-label{display:none}
-@media (max-width:720px){.app{padding:16px 12px 32px} .hero{align-items:flex-start} .search-form{grid-template-columns:1fr} .nearest-grid{grid-template-columns:1fr} .map-actions{flex-wrap:wrap;justify-content:flex-end}}
-@media print{@page{size:A4 portrait;margin:6mm} html,body{background:#fff} body{font-size:8.5pt} .app{width:100%;padding:0} .search-panel,.map-actions,.hero>.button,.footer,.map-note,.prototype-badge,.location-help{display:none!important} .hero{margin:0 0 1.5mm} .hero h1{margin-bottom:.8mm;font-size:14pt} .hero .kicker{margin-bottom:.5mm;font-size:7pt} .lead{display:none} .print-search-label{display:block;margin:0;font-size:8.5pt;font-weight:700;color:#303a45} .panel{break-inside:avoid;margin-bottom:2mm;padding:2mm;border:1px solid #ccd3da;border-radius:0;box-shadow:none} .section-head{min-height:0;margin:0 0 1mm} .section-head .kicker{display:none} h2{font-size:10pt} .map-viewport{width:135mm;max-width:100%;height:auto;margin:1mm auto 0;aspect-ratio:6907 / 6095;border-radius:0} .map-stage{left:0!important;top:0!important;width:100%!important;height:100%!important;transform:none!important} .tile-layer,.marker-layer{display:none!important} .print-map{display:block!important} .nearest-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:1.5mm;margin-top:1mm;break-inside:avoid} .facility-card{padding:2mm;border-radius:0} .rank{width:5.5mm;height:5.5mm;margin-bottom:1mm;font-size:7.5pt} .facility-card h3{margin-bottom:.8mm;font-size:8.3pt;line-height:1.25} .facility-card p{margin-bottom:.6mm;font-size:7.3pt;line-height:1.25} .phone-link{min-height:0;margin:0 0 .6mm;padding:0;border:0;background:none;color:#202833;font-size:7.3pt;font-weight:700} .facility-card .distance{font-size:7.3pt}}
+@media (max-width:720px){.app{padding:16px 12px 32px} .hero{align-items:flex-start} .search-form{grid-template-columns:1fr} .nearest-grid,.all-facilities-list{grid-template-columns:1fr} .map-actions{flex-wrap:wrap;justify-content:flex-end}}
+@media print{@page{size:A4 portrait;margin:6mm} html,body{background:#fff} body{font-size:8.5pt} .app{width:100%;padding:0} .search-panel,.map-actions,.hero>.button,.footer,.map-note,.prototype-badge,.location-help,.all-facilities-panel{display:none!important} .hero{margin:0 0 1.5mm} .hero h1{margin-bottom:.8mm;font-size:14pt} .hero .kicker{margin-bottom:.5mm;font-size:7pt} .lead{display:none} .print-search-label{display:block;margin:0;font-size:8.5pt;font-weight:700;color:#303a45} .panel{break-inside:avoid;margin-bottom:2mm;padding:2mm;border:1px solid #ccd3da;border-radius:0;box-shadow:none} .section-head{min-height:0;margin:0 0 1mm} .section-head .kicker{display:none} h2{font-size:10pt} .map-viewport{width:135mm;max-width:100%;height:auto;margin:1mm auto 0;aspect-ratio:6907 / 6095;border-radius:0} .map-stage{left:0!important;top:0!important;width:100%!important;height:100%!important;transform:none!important} .tile-layer,.marker-layer{display:none!important} .print-map{display:block!important} .nearest-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:1.5mm;margin-top:1mm;break-inside:avoid} .facility-card{padding:2mm;border-radius:0} .rank{width:5.5mm;height:5.5mm;margin-bottom:1mm;font-size:7.5pt} .facility-card h3{margin-bottom:.8mm;font-size:8.3pt;line-height:1.25} .facility-card p{margin-bottom:.6mm;font-size:7.3pt;line-height:1.25} .phone-link{min-height:0;margin:0 0 .6mm;padding:0;border:0;background:none;color:#202833;font-size:7.3pt;font-weight:700} .facility-card .distance{font-size:7.3pt}}
 </style>
 </head>
 <body>
@@ -46,6 +58,7 @@
   <div id="placementHint" class="placement-hint" hidden>地図上の自宅・基準地点をタップ</div>
 </div><p class="map-note">印刷時は、指定した位置と近い3施設が見える範囲へ自動調整します。</p></section>
 <section class="panel" aria-labelledby="nearestTitle"><div class="section-head"><div><p class="kicker">NEAREST</p><h2 id="nearestTitle">近い施設</h2></div></div><div id="nearestList" class="nearest-grid"><p class="empty">自宅位置を指定すると、近い順に3施設を表示します。</p></div></section>
+<section class="panel all-facilities-panel" aria-labelledby="allFacilitiesTitle"><div class="section-head"><div><p class="kicker">DIRECTORY</p><h2 id="allFacilitiesTitle">神栖市内の放課後等デイサービス一覧</h2></div></div><details class="facility-directory"><summary id="allFacilitiesSummary">施設一覧を見る</summary><div id="allFacilitiesList" class="all-facilities-list"></div></details></section>
 <footer class="footer"><p>掲載施設情報は神栖市「やさしい福祉」掲載データを基に整理しています。</p><p>本サービスは神栖市の公式サービスではありません。最新の利用可否・空き状況・送迎範囲等は、神栖市または各施設へご確認ください。</p><p>利用者住所は保存しません。</p></footer>
 </main>
 <script>
@@ -95,6 +108,8 @@ const addressForm = document.getElementById("addressForm");
 const addressInput = document.getElementById("addressInput");
 const statusEl = document.getElementById("status");
 const nearestList = document.getElementById("nearestList");
+const allFacilitiesList = document.getElementById("allFacilitiesList");
+const allFacilitiesSummary = document.getElementById("allFacilitiesSummary");
 const printButton = document.getElementById("printButton");
 const printSearchLabel = document.getElementById("printSearchLabel");
 const currentLocationButton = document.getElementById("currentLocationButton");
@@ -125,6 +140,29 @@ function toRadians(v) { return v * Math.PI / 180; }
 function haversineDistanceKm(lat1, lon1, lat2, lon2) { const r = 6371.0088; const dLat = toRadians(lat2 - lat1); const dLon = toRadians(lon2 - lon1); const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) * Math.sin(dLon / 2) ** 2; return 2 * r * Math.asin(Math.sqrt(a)); }
 function getNearestFacilities(latitude, longitude, limit = 3) { return FACILITIES.map(f => ({ ...f, distanceKm: haversineDistanceKm(latitude, longitude, f.latitude, f.longitude) })).sort((a, b) => a.distanceKm - b.distanceKm).slice(0, limit); }
 function renderNearestFacilities(facilities) { nearestList.replaceChildren(); facilities.forEach((facility, index) => { const card=document.createElement('article'); card.className='facility-card'; const rank=document.createElement('div'); rank.className='rank'; rank.textContent=String(index+1); const name=document.createElement('h3'); name.textContent=facility.name; const address=document.createElement('p'); address.textContent=facility.address; const phone=document.createElement('a'); phone.className='phone-link'; phone.href=`tel:${facility.phone.replace(/-/g,'')}`; phone.textContent=`電話 ${facility.phone}`; phone.setAttribute('aria-label',`${facility.name}へ電話 ${facility.phone}`); const distance=document.createElement('p'); distance.className='distance'; distance.textContent=`直線距離 約${facility.distanceKm.toFixed(1)} km`; card.append(rank,name,address,phone,distance); nearestList.append(card); }); }
+function renderAllFacilities() {
+  allFacilitiesList.replaceChildren();
+  allFacilitiesSummary.textContent=`全${FACILITIES.length}施設を見る`;
+  FACILITIES.forEach(facility=>{
+    const row=document.createElement('article');
+    row.className='all-facility-row';
+    const number=document.createElement('div');
+    number.className='all-facility-number';
+    number.textContent=String(facility.id);
+    const body=document.createElement('div');
+    const name=document.createElement('h3');
+    name.textContent=facility.name;
+    const address=document.createElement('p');
+    address.textContent=facility.address;
+    const phone=document.createElement('a');
+    phone.href=`tel:${facility.phone.replace(/-/g,'')}`;
+    phone.textContent=`電話 ${facility.phone}`;
+    phone.setAttribute('aria-label',`${facility.name}へ電話 ${facility.phone}`);
+    body.append(name,address,phone);
+    row.append(number,body);
+    allFacilitiesList.append(row);
+  });
+}
 function latLonToPercent(latitude, longitude) { const c = APP_CONFIG.mapCalibration; return { x: c.x.longitude * longitude + c.x.latitude * latitude + c.x.offset, y: c.y.longitude * longitude + c.y.latitude * latitude + c.y.offset }; }
 function percentToLatLon(x, y) { const c = APP_CONFIG.mapCalibration; const a=c.x.longitude,b=c.x.latitude,d=c.y.longitude,e=c.y.latitude; const px=x-c.x.offset, py=y-c.y.offset; const det=a*e-b*d; return { longitude:(px*e-b*py)/det, latitude:(a*py-px*d)/det }; }
 function positionMarker(marker) { const x=Number(marker.dataset.mapX), y=Number(marker.dataset.mapY); if(!Number.isFinite(x)||!Number.isFinite(y)||!baseStage.width||!baseStage.height) return; marker.style.left=`${mapState.x + baseStage.width * (x/100) * mapState.scale}px`; marker.style.top=`${mapState.y + baseStage.height * (y/100) * mapState.scale}px`; }
@@ -332,7 +370,7 @@ function endPointer(event) {
 }
 mapViewport.addEventListener('pointerup', endPointer); mapViewport.addEventListener('pointercancel', endPointer); mapViewport.addEventListener('wheel', event => { event.preventDefault(); const rect=mapViewport.getBoundingClientRect(); changeZoom(event.deltaY<0?1.12:0.9, event.clientX-rect.left, event.clientY-rect.top); }, {passive:false});
 window.addEventListener('resize', layoutMapStage);
-layoutMapStage(); renderFacilityMarkers(); resetMap(); updatePlacementWording();
+layoutMapStage(); renderFacilityMarkers(); renderAllFacilities(); resetMap(); updatePlacementWording();
 printButton.disabled=false;
 </script>
 </body></html>
