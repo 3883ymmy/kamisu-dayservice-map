@@ -23,11 +23,18 @@ const APP_CONFIG = {
   },
 
   /*
-    住所検索サービスは未選定です。
-    利用者住所を外部送信することになるため、プライバシーと利用規約を確認してから接続します。
+    住所検索は国土地理院の地理院地図・地名検索APIへ
+    ブラウザから直接問い合わせます。入力住所はGitHubへ保存しません。
   */
   geocoder: {
-    provider: null,
-    endpoint: null
+    provider: "gsi",
+    endpoint: "https://msearch.gsi.go.jp/address-search/AddressSearch",
+    defaultPrefix: "茨城県神栖市",
+    searchArea: {
+      north: 35.98,
+      south: 35.72,
+      west: 140.53,
+      east: 140.90
+    }
   }
 };
