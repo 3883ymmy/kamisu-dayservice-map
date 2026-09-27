@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>神栖市 放課後等デイサービス検索</title>
+<title>神栖市放課後等デイサービス検索</title>
 <style>
 :root {font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic","Meiryo",sans-serif;color:#202833;background:#f4f6f8;}
 *{box-sizing:border-box} body{margin:0;min-width:320px;background:#f4f6f8} button,input{font:inherit} button{cursor:pointer}
@@ -29,7 +29,7 @@
 </head>
 <body>
 <main class="app">
-<header class="hero"><div><p class="kicker">神栖市</p><h1>放課後等デイサービス検索</h1><p class="lead">自宅位置と近隣の放課後等デイサービスを地図で確認します。</p><p id="printSearchLabel" class="print-search-label"></p></div><button id="printButton" class="button button-subtle" type="button">印刷</button></header>
+<header class="hero"><div><h1>神栖市放課後等デイサービス検索</h1><p class="lead">自宅位置と近隣の放課後等デイサービスを地図で確認します。</p><p id="printSearchLabel" class="print-search-label"></p></div><button id="printButton" class="button button-subtle" type="button">印刷</button></header>
 <section class="panel search-panel" aria-labelledby="searchTitle"><h2 id="searchTitle">自宅位置を指定</h2><form id="addressForm" class="search-form"><label class="sr-only" for="addressInput">住所</label><input id="addressInput" name="address" type="text" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="例：神栖市神栖○丁目○番○号"><button class="button button-primary" type="submit">住所検索</button></form><div class="prototype-actions"><button id="currentLocationButton" class="button button-primary" type="button">現在地を使う</button><button id="placeHomeButton" class="button button-accent" type="button">地図をタップして位置を設定</button></div><p id="locationHelp" class="location-help">住所が分からない場合は、地図上のおおよその位置を直接指定できます。</p><p id="status" class="status" aria-live="polite">住所検索では入力した住所を国土地理院の地名検索APIへ送信します。GitHubには保存しません。</p></section>
 <section class="panel" aria-labelledby="mapTitle"><div class="section-head"><div><p class="kicker">MAP</p><h2 id="mapTitle">地図</h2></div><div class="map-actions"><button id="zoomOutButton" class="icon-button" type="button" aria-label="縮小">−</button><button id="zoomInButton" class="icon-button" type="button" aria-label="拡大">＋</button><button id="resetMapButton" class="button button-subtle" type="button">全体表示</button></div></div>
 <div id="mapViewport" class="map-viewport">
