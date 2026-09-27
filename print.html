@@ -27,7 +27,7 @@ button{font:inherit;cursor:pointer}
   border:1px solid #cbd2da;background:#fff;color:#25303b;font-weight:750
 }
 .button-primary{border-color:#1f62b8;background:#2b6fc7;color:#fff}
-.button:disabled{cursor:wait;opacity:.55}
+.button[aria-disabled="true"]{cursor:wait;opacity:.7}
 .status{margin:0;color:#626d78;font-size:.86rem}
 .sheet{
   padding:14px;border:1px solid #d8dde3;background:#fff;
@@ -114,7 +114,7 @@ h1{margin-bottom:4px;font-size:1.45rem}
     <p id="status" class="status">印刷用のベクター地図を読み込んでいます…</p>
     <div class="control-actions">
       <button id="backButton" class="button" type="button">検索画面に戻る</button>
-      <button id="printButton" class="button button-primary" type="button" disabled>印刷</button>
+      <button id="printButton" class="button button-primary" type="button" aria-disabled="true">印刷準備中</button>
     </div>
   </div>
 
@@ -167,6 +167,7 @@ const loading=document.getElementById('loading');
 const nearestGrid=document.getElementById('nearestGrid');
 
 let selection=null;
+let printReady=false;
 
 function computePrintCrop(selection){
   const points=[selection.point,...selection.nearest.map(f=>({x:f.mapX,y:f.mapY}))];
@@ -363,7 +364,8 @@ async function buildRasterMap(){
   });
 
   loading.hidden=true;
-  printButton.disabled=false;
+  printReady=true;
+  printButton.setAttribute('aria-disabled','false');
   printButton.textContent='印刷';
   statusEl.textContent='スマホ向け高解像度地図の準備ができました。';
 }
@@ -396,7 +398,9 @@ function fail(message){
   errorEl.hidden=false;
   errorEl.textContent=message;
   statusEl.textContent=message;
-  printButton.disabled=true;
+  printReady=false;
+  printButton.setAttribute('aria-disabled','true');
+  printButton.textContent='再読み込みして準備';
 }
 
 try{
@@ -414,7 +418,8 @@ try{
 mapImage.addEventListener('load',()=>{
   if(USE_RASTER_PRINT) return;
   loading.hidden=true;
-  printButton.disabled=false;
+  printReady=true;
+  printButton.setAttribute('aria-disabled','false');
   printButton.textContent='印刷';
   statusEl.textContent='印刷用ベクター地図の準備ができました。';
 });
@@ -429,7 +434,10 @@ backButton.addEventListener('click',()=>{
 });
 
 printButton.addEventListener('click',()=>{
-  if(printButton.disabled) return;
+  if(!printReady){
+    statusEl.textContent='印刷用地図をまだ準備しています。表示が完了したら、もう一度「印刷」を押してください。';
+    return;
+  }
   window.print();
 });
 </script>
