@@ -1,90 +1,189 @@
 <!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#f7f8fa">
-  <title>神栖市 放課後等デイサービス検索</title>
-  <link rel="stylesheet" href="styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>神栖市 放課後等デイサービス検索</title>
+<style>
+:root {font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic","Meiryo",sans-serif;color:#202833;background:#f4f6f8;}
+*{box-sizing:border-box} body{margin:0;min-width:320px;background:#f4f6f8} button,input{font:inherit} button{cursor:pointer}
+.app{width:min(1160px,100%);margin:0 auto;padding:24px 18px 48px} .hero,.section-head,.map-actions,.prototype-actions{display:flex;align-items:center} .hero,.section-head{justify-content:space-between;gap:18px} .hero{margin-bottom:18px}
+.kicker{margin:0 0 4px;font-size:.76rem;font-weight:800;letter-spacing:.12em;color:#65707c} h1,h2,h3,p{margin-top:0} h1{margin-bottom:8px;font-size:clamp(1.7rem,4vw,2.5rem)} h2{margin-bottom:0;font-size:1.2rem} .lead{margin-bottom:0;color:#5f6873}
+.panel{margin-bottom:16px;padding:18px;border:1px solid #d8dde3;border-radius:16px;background:#fff;box-shadow:0 8px 24px rgba(24,34,44,.04)}
+.search-panel h2{margin-bottom:12px} .search-form{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px} .search-form input{width:100%;min-height:50px;padding:0 14px;border:1px solid #b8c1cb;border-radius:11px;background:#fff} .search-form input:focus{outline:3px solid rgba(43,111,199,.18);border-color:#2b6fc7}
+.button,.icon-button{min-height:46px;border-radius:10px;font-weight:750} .button{padding:0 16px} .button-primary{border:1px solid #1f62b8;background:#2b6fc7;color:#fff} .button-accent{border:1px solid #a53d34;background:#b94a3f;color:#fff} .button-subtle,.icon-button{border:1px solid #cbd2da;background:#fff;color:#25303b} .icon-button{width:46px;padding:0;font-size:1.35rem} .map-actions{gap:8px} .prototype-actions{gap:10px;margin-top:10px;flex-wrap:wrap} .prototype-badge{display:inline-flex;align-items:center;min-height:30px;padding:0 10px;border-radius:999px;background:#fff3d6;color:#72571e;font-size:.78rem;font-weight:800} .status{margin:10px 0 0;min-height:1.4em;color:#626d78;font-size:.9rem}
+.map-viewport{position:relative;overflow:hidden;width:100%;margin-top:14px;aspect-ratio:6907 / 6095;border:1px solid #d8dde3;border-radius:12px;background:#dfe8f8;touch-action:none} .map-stage{position:absolute;transform-origin:0 0;will-change:transform} .tile-layer,.marker-layer,.print-map{position:absolute;inset:0} .tile-layer{overflow:hidden} .tile{position:absolute;width:512px;height:512px;user-select:none;-webkit-user-drag:none;image-rendering:auto} .marker-layer{pointer-events:none} .marker{position:absolute;transform:translate(-50%,-50%);display:grid;place-items:center;line-height:1;filter:drop-shadow(0 2px 2px rgba(0,0,0,.22))} .marker-facility{min-width:24px;height:24px;padding:0 5px;border:2px solid #fff;border-radius:999px;background:#c83e35;color:#fff;font-size:.68rem;font-weight:900} .marker-home{width:30px;height:30px;border:3px solid #fff;border-radius:50% 50% 50% 0;background:#2569c7;color:#fff;font-size:.85rem;transform:translate(-50%,-82%) rotate(-45deg)} .marker-home>span{transform:rotate(45deg)} .map-placeholder{position:absolute;inset:0;display:grid;place-content:center;gap:8px;padding:24px;text-align:center;color:#66717d;background:#edf0f3} .map-placeholder strong{color:#303a45} .map-placeholder[hidden], .placement-hint[hidden]{display:none!important} .placement-hint{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:5;padding:8px 12px;border-radius:999px;background:rgba(32,40,51,.88);color:#fff;font-size:.82rem;font-weight:800;pointer-events:none} .map-viewport.placement-mode{outline:4px solid rgba(185,74,63,.25);outline-offset:-4px} .map-note{margin:9px 0 0;color:#6b7580;font-size:.78rem}
+.nearest-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px} .facility-card{padding:14px;border:1px solid #d8dde3;border-radius:12px;background:#fff} .rank{display:inline-grid;place-items:center;width:30px;height:30px;margin-bottom:10px;border-radius:999px;background:#edf3fb;font-weight:850} .facility-card h3{margin-bottom:8px;font-size:1rem;line-height:1.45} .facility-card p{margin-bottom:6px;color:#626d78;font-size:.9rem} .facility-card .distance{margin-bottom:0;font-weight:800;color:#202833} .phone-link{display:inline-flex;align-items:center;justify-content:center;min-height:40px;margin:4px 0 8px;padding:0 12px;border:1px solid #b8c1cb;border-radius:9px;background:#f8fafc;color:#1f62b8;font-weight:750;text-decoration:none} .phone-link:active{background:#edf3fb} .empty{grid-column:1/-1;margin:0;padding:12px 0 2px;color:#66717d} .footer{color:#68737f;font-size:.78rem;line-height:1.6} .footer p{margin-bottom:4px} .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.print-map{display:none} .print-map img{display:block;width:100%;height:100%}
+@media (max-width:720px){.app{padding:16px 12px 32px} .hero{align-items:flex-start} .search-form{grid-template-columns:1fr} .nearest-grid{grid-template-columns:1fr} .map-actions{flex-wrap:wrap;justify-content:flex-end}}
+@media print{@page{size:A4 portrait;margin:10mm} body{background:#fff} .app{width:100%;padding:0} .search-panel,.map-actions,.hero>.button,.footer,.map-note{display:none!important} .hero{margin-bottom:5mm} .lead{display:none} .panel{break-inside:avoid;margin-bottom:5mm;padding:4mm;border-radius:0;box-shadow:none} .map-viewport{height:auto;aspect-ratio:6907 / 6095} .map-stage{left:0!important;top:0!important;width:100%!important;height:100%!important} .tile-layer{display:none!important} .print-map{display:block!important} .nearest-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:3mm}}
+</style>
 </head>
 <body>
-  <main class="app">
-    <header class="hero">
-      <div>
-        <p class="kicker">神栖市</p>
-        <h1>放課後等デイサービス検索</h1>
-        <p class="lead">現在地または住所から、近隣の放課後等デイサービスを確認します。</p>
-      </div>
-      <button id="printButton" class="button button-subtle" type="button">印刷</button>
-    </header>
+<main class="app">
+<header class="hero"><div><p class="kicker">神栖市</p><h1>放課後等デイサービス検索</h1><p class="lead">自宅位置と近隣の放課後等デイサービスを地図で確認します。</p></div><button id="printButton" class="button button-subtle" type="button">印刷</button></header>
+<section class="panel search-panel" aria-labelledby="searchTitle"><h2 id="searchTitle">自宅位置を指定</h2><form id="addressForm" class="search-form"><label class="sr-only" for="addressInput">住所</label><input id="addressInput" name="address" type="text" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="例：神栖市神栖○丁目○番○号"><button class="button button-primary" type="submit">住所検索</button></form><div class="prototype-actions"><button id="currentLocationButton" class="button button-primary" type="button">現在地を使う</button><button id="placeHomeButton" class="button button-accent" type="button">地図上で仮位置を指定</button><span class="prototype-badge">タイル版試作</span></div><p id="status" class="status" aria-live="polite">住所検索では入力した住所を国土地理院の地名検索APIへ送信します。GitHubには保存しません。</p></section>
+<section class="panel" aria-labelledby="mapTitle"><div class="section-head"><div><p class="kicker">MAP</p><h2 id="mapTitle">地図</h2></div><div class="map-actions"><button id="zoomOutButton" class="icon-button" type="button" aria-label="縮小">−</button><button id="zoomInButton" class="icon-button" type="button" aria-label="拡大">＋</button><button id="resetMapButton" class="button button-subtle" type="button">全体表示</button></div></div>
+<div id="mapViewport" class="map-viewport">
+  <div id="mapStage" class="map-stage">
+    <div id="tileLayer" class="tile-layer"></div>
+    <div class="print-map"><img src="assets/kamisu-map-print.svg" alt="神栖市全図 印刷用"></div>
+    <div id="facilityMarkerLayer" class="marker-layer"></div>
+    <div id="homeMarkerLayer" class="marker-layer"></div>
+  </div>
+  <div id="mapPlaceholder" class="map-placeholder" hidden><strong>背景地図を読み込めませんでした</strong><span>タイルの配置を確認してください。</span></div>
+  <div id="placementHint" class="placement-hint" hidden>地図上の自宅付近をタップ</div>
+</div><p class="map-note">画面表示はタイル方式、印刷時はSVG背景を使う想定です。</p></section>
+<section class="panel" aria-labelledby="nearestTitle"><div class="section-head"><div><p class="kicker">NEAREST</p><h2 id="nearestTitle">近い施設</h2></div></div><div id="nearestList" class="nearest-grid"><p class="empty">自宅位置を指定すると、近い順に3施設を表示します。</p></div></section>
+<footer class="footer"><p>掲載施設情報は神栖市「やさしい福祉」掲載データを基に整理した試作です。</p><p>利用者住所は保存しません。</p></footer>
+</main>
+<script>
+const APP_CONFIG = {
+  mapAspectRatio: 6907 / 6095,
+  mapCalibration: {
+    x: { longitude: 311.98753502, latitude: -27.22852630, offset: -42883.90061195 },
+    y: { longitude: -24.10752707, latitude: -495.96432254, offset: 21217.66403438 }
+},
+  geocoder: {
+    provider: 'gsi',
+    endpoint: 'https://msearch.gsi.go.jp/address-search/AddressSearch',
+    defaultPrefix: '茨城県神栖市',
+    searchArea: { north: 35.98, south: 35.72, west: 140.53, east: 140.90 }
+  },
+  tiles: {
+    tileSize: 512,
+    maxZoom: 4,
+    widths: [512, 1024, 2048, 4096, 8192],
+    heights: [452, 904, 1807, 3614, 7229],
+    url: (z,x,y) => `assets/tiles/${z}/${x}/${y}.webp`
+  }
+};
+const FACILITIES = [
+  { id: 1,  name: "おはなくらぶ２", address: "神栖市息栖2287", latitude: 35.88166, longitude: 140.62385, mapX: 10.806386, mapY: 30.317792, phone: "0299-95-6040" },
+  { id: 2,  name: "おはなくらぶ", address: "神栖市息栖3040-277、3040-278", latitude: 35.87854, longitude: 140.63037, mapX: 14.214081, mapY: 33.031779, phone: "0299-95-6040" },
+  { id: 3,  name: "フレンズサークル神栖", address: "神栖市下幡木4049-75", latitude: 35.91892, longitude: 140.62656, mapX: 12.095784, mapY: 13.407562, phone: "0299-95-8639" },
+  { id: 4,  name: "ひまわりくらぶ第３教室", address: "神栖市筒井1273-1", latitude: 35.90576, longitude: 140.62491, mapX: 12.934916, mapY: 20.807237, phone: "0299-94-2535" },
+  { id: 5,  name: "多機能型重症児デイ すいんく", address: "神栖市平泉2407", latitude: 35.91089, longitude: 140.63496, mapX: 14.439214, mapY: 16.701461, phone: "0299-95-7107" },
+  { id: 6,  name: "指定放課後等デイサービス事業所カラフル", address: "神栖市深芝南1-4-1", latitude: 35.90654, longitude: 140.64688, mapX: 18.471142, mapY: 18.765948, phone: "0299-77-8202" },
+  { id: 7,  name: "ゆめキッズ神栖第二教室", address: "神栖市深芝南2-18-4", latitude: 35.90881, longitude: 140.64650, mapX: 18.317642, mapY: 17.397356, mapGroup: "7-10", phone: "080-4120-8997" },
+  { id: 8,  name: "ゆめキッズ神栖第四教室", address: "神栖市深芝南2-18-7", latitude: 35.90881, longitude: 140.64650, mapX: 18.317642, mapY: 17.397356, mapGroup: "7-10", phone: "070-8389-1438" },
+  { id: 9,  name: "ゆめキッズ神栖", address: "神栖市深芝南2-25-11", latitude: 35.90938, longitude: 140.64502, mapX: 18.317642, mapY: 17.397356, mapGroup: "7-10", phone: "0299-77-8997" },
+  { id: 10, name: "ゆめキッズ神栖第三教室", address: "神栖市深芝南2-25-6", latitude: 35.90938, longitude: 140.64502, mapX: 18.317642, mapY: 17.397356, mapGroup: "7-10", phone: "090-8944-8997" },
+  { id: 11, name: "シードリーフ神栖", address: "神栖市神栖1-12-23", latitude: 35.89969, longitude: 140.64384, mapX: 17.529677, mapY: 21.804686, phone: "0299-95-8851" },
+  { id: 12, name: "スマイルジョワ神栖教室", address: "神栖市神栖2-4-52 パレスA棟", latitude: 35.90177, longitude: 140.65124, mapX: 19.791240, mapY: 20.784041, phone: "0299-77-7653" },
+  { id: 13, name: "神栖市障害者デイサービスセンターのぞみ", address: "神栖市溝口1746-1（保健・福祉会館内）", latitude: 35.88856, longitude: 140.66317, mapX: 24.038068, mapY: 27.047089, phone: "0299-93-1063" },
+  { id: 14, name: "にこにこハート", address: "神栖市太田4633-1", latitude: 35.84526, longitude: 140.71636, mapX: 41.895211, mapY: 47.459986, phone: "0479-44-4508" },
+  { id: 15, name: "障害者地域支援センター 潮風の郷", address: "神栖市矢田部5258", latitude: 35.81269, longitude: 140.73528, mapX: 48.393369, mapY: 62.839248, phone: "0479-40-2171" },
+  { id: 16, name: "でいサービスみなと", address: "神栖市土合南2-1-21-1", latitude: 35.78845, longitude: 140.77483, mapX: 61.799018, mapY: 74.321503, phone: "0479-48-0300" },
+  { id: 17, name: "太陽の家", address: "神栖市土合南3-6-17", latitude: 35.791359, longitude: 140.770135, mapX: 60.141220, mapY: 72.906518, phone: "0479-26-4805" },
+  { id: 18, name: "にこにこハート土合教室", address: "神栖市土合本町1-9082-18", latitude: 35.78651, longitude: 140.78143, mapX: 63.681948, mapY: 74.855022, phone: "0479-26-3301" }
+];
+</script>
+<script>
+const addressForm = document.getElementById("addressForm");
+const addressInput = document.getElementById("addressInput");
+const statusEl = document.getElementById("status");
+const nearestList = document.getElementById("nearestList");
+const printButton = document.getElementById("printButton");
+const currentLocationButton = document.getElementById("currentLocationButton");
+const placeHomeButton = document.getElementById("placeHomeButton");
+const mapViewport = document.getElementById("mapViewport");
+const mapStage = document.getElementById("mapStage");
+const tileLayer = document.getElementById("tileLayer");
+const mapPlaceholder = document.getElementById("mapPlaceholder");
+const placementHint = document.getElementById("placementHint");
+const facilityMarkerLayer = document.getElementById("facilityMarkerLayer");
+const homeMarkerLayer = document.getElementById("homeMarkerLayer");
+const zoomInButton = document.getElementById("zoomInButton");
+const zoomOutButton = document.getElementById("zoomOutButton");
+const resetMapButton = document.getElementById("resetMapButton");
+let mapState = { scale: 1, x: 0, y: 0 };
+let baseStage = { left: 0, top: 0, width: 0, height: 0 };
+let dragState = null, pinchState = null, placementMode = false, pointerMoved = false;
+const activePointers = new Map();
+function toRadians(v) { return v * Math.PI / 180; }
+function haversineDistanceKm(lat1, lon1, lat2, lon2) { const r = 6371.0088; const dLat = toRadians(lat2 - lat1); const dLon = toRadians(lon2 - lon1); const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) * Math.sin(dLon / 2) ** 2; return 2 * r * Math.asin(Math.sqrt(a)); }
+function getNearestFacilities(latitude, longitude, limit = 3) { return FACILITIES.map(f => ({ ...f, distanceKm: haversineDistanceKm(latitude, longitude, f.latitude, f.longitude) })).sort((a, b) => a.distanceKm - b.distanceKm).slice(0, limit); }
+function renderNearestFacilities(facilities) { nearestList.replaceChildren(); facilities.forEach((facility, index) => { const card=document.createElement('article'); card.className='facility-card'; const rank=document.createElement('div'); rank.className='rank'; rank.textContent=String(index+1); const name=document.createElement('h3'); name.textContent=facility.name; const address=document.createElement('p'); address.textContent=facility.address; const phone=document.createElement('a'); phone.className='phone-link'; phone.href=`tel:${facility.phone.replace(/-/g,'')}`; phone.textContent=`電話 ${facility.phone}`; phone.setAttribute('aria-label',`${facility.name}へ電話 ${facility.phone}`); const distance=document.createElement('p'); distance.className='distance'; distance.textContent=`直線距離 約${facility.distanceKm.toFixed(1)} km`; card.append(rank,name,address,phone,distance); nearestList.append(card); }); }
+function latLonToPercent(latitude, longitude) { const c = APP_CONFIG.mapCalibration; return { x: c.x.longitude * longitude + c.x.latitude * latitude + c.x.offset, y: c.y.longitude * longitude + c.y.latitude * latitude + c.y.offset }; }
+function percentToLatLon(x, y) { const c = APP_CONFIG.mapCalibration; const a=c.x.longitude,b=c.x.latitude,d=c.y.longitude,e=c.y.latitude; const px=x-c.x.offset, py=y-c.y.offset; const det=a*e-b*d; return { longitude:(px*e-b*py)/det, latitude:(a*py-px*d)/det }; }
+function markerAtPercent(x, y, type, text, title) { const marker=document.createElement('div'); marker.className=`marker marker-${type}`; marker.style.left=`${x}%`; marker.style.top=`${y}%`; marker.title=title; if(type==='home'){ const inner=document.createElement('span'); inner.textContent='★'; marker.append(inner); } else { marker.textContent=text; } return marker; }
+function renderFacilityMarkers() { facilityMarkerLayer.replaceChildren(); const groups=new Map(); FACILITIES.forEach(f=>{ const key=f.mapGroup||`id-${f.id}`; if(!groups.has(key)) groups.set(key,[]); groups.get(key).push(f); }); groups.forEach(group=>{ const first=group[0]; const text=group.length>1?`${group[0].id}-${group[group.length-1].id}`:String(first.id); const title=group.map(f=>`${f.id}. ${f.name}`).join('\n'); facilityMarkerLayer.append(markerAtPercent(first.mapX, first.mapY, 'facility', text, title)); }); }
+function renderHomeMarker(x,y) { homeMarkerLayer.replaceChildren(); homeMarkerLayer.append(markerAtPercent(x,y,'home','', '自宅（仮位置）')); }
+function layoutMapStage() { const vw=mapViewport.clientWidth, vh=mapViewport.clientHeight; if(!vw||!vh) return; const ratio=APP_CONFIG.mapAspectRatio; let width,height; if(vw/vh > ratio){ height=vh; width=height*ratio; } else { width=vw; height=width/ratio; } baseStage={left:(vw-width)/2, top:(vh-height)/2, width, height}; mapStage.style.left=`${baseStage.left}px`; mapStage.style.top=`${baseStage.top}px`; mapStage.style.width=`${width}px`; mapStage.style.height=`${height}px`; applyMapTransform(); }
+function chooseZoom() { return Math.max(0, Math.min(APP_CONFIG.tiles.maxZoom, Math.round(Math.log2(mapState.scale)))); }
+function renderTiles() { tileLayer.replaceChildren(); const z=chooseZoom(); const tileSize=APP_CONFIG.tiles.tileSize; const mapW=APP_CONFIG.tiles.widths[z]; const cols=Math.ceil(mapW/tileSize); const rows=Math.ceil(APP_CONFIG.tiles.heights[z]/tileSize); const displayTile=(baseStage.width / mapW) * mapState.scale * tileSize; for(let x=0;x<cols;x++){ for(let y=0;y<rows;y++){ const left = x*displayTile + mapState.x; const top = y*displayTile + mapState.y; const right = left + displayTile; const bottom = top + displayTile; if(right < -32 || bottom < -32 || left > baseStage.width + 32 || top > baseStage.height + 32) continue; const img=document.createElement('img'); img.className='tile'; img.loading='lazy'; img.decoding='async'; img.alt=''; img.src=APP_CONFIG.tiles.url(z,x,y); img.style.left=`${left}px`; img.style.top=`${top}px`; img.style.width=`${displayTile}px`; img.style.height=`${displayTile}px`; tileLayer.append(img); }} mapPlaceholder.hidden = tileLayer.childElementCount > 0; }
+function applyMapTransform() { renderTiles(); }
+function resetMap() { mapState={scale:1,x:0,y:0}; applyMapTransform(); }
+function changeZoom(factor, centerX = mapViewport.clientWidth / 2, centerY = mapViewport.clientHeight / 2) { const oldScale=mapState.scale; const nextScale=Math.min(6,Math.max(1,oldScale*factor)); if(nextScale===oldScale) return; const stageCenterX = centerX - baseStage.left; const stageCenterY = centerY - baseStage.top; const ratio = nextScale / oldScale; mapState.x = stageCenterX - (stageCenterX - mapState.x) * ratio; mapState.y = stageCenterY - (stageCenterY - mapState.y) * ratio; mapState.scale = nextScale; applyMapTransform(); }
+function focusOnPoints(points) { if(!points.length) return; const xs=points.map(p=>p.x), ys=points.map(p=>p.y); const minX=Math.min(...xs), maxX=Math.max(...xs), minY=Math.min(...ys), maxY=Math.max(...ys); const spanX=Math.max(10,maxX-minX), spanY=Math.max(10,maxY-minY); const targetWidth=baseStage.width*(spanX/100), targetHeight=baseStage.height*(spanY/100); const scale=Math.min(4.5,Math.max(1.15,Math.min(mapViewport.clientWidth*.7/targetWidth,mapViewport.clientHeight*.7/targetHeight))); const centerX=baseStage.width*((minX+maxX)/200), centerY=baseStage.height*((minY+maxY)/200); mapState.scale=scale; mapState.x = mapViewport.clientWidth/2 - baseStage.left - centerX*scale; mapState.y = mapViewport.clientHeight/2 - baseStage.top - centerY*scale; applyMapTransform(); }
+function screenToMapPercent(clientX, clientY) { const rect=mapViewport.getBoundingClientRect(); const sx=clientX-rect.left, sy=clientY-rect.top; const localX=(sx-baseStage.left-mapState.x)/mapState.scale; const localY=(sy-baseStage.top-mapState.y)/mapState.scale; return {x: localX/baseStage.width*100, y: localY/baseStage.height*100}; }
+function setHomeFromMap(clientX, clientY) { const point=screenToMapPercent(clientX,clientY); if(point.x<0||point.x>100||point.y<0||point.y>100){ statusEl.textContent='地図の範囲内をタップしてください。'; return; } const {latitude,longitude} = percentToLatLon(point.x, point.y); const nearest=getNearestFacilities(latitude, longitude, 3); renderHomeMarker(point.x, point.y); renderNearestFacilities(nearest); focusOnPoints([point, ...nearest.map(f=>({x:f.mapX,y:f.mapY}))]); placementMode=false; mapViewport.classList.remove('placement-mode'); placementHint.hidden=true; placeHomeButton.textContent='地図上で仮位置を指定'; statusEl.textContent='仮位置から最寄り3施設を表示しました。距離は試作座標による概算です。'; }
+function normalizeAddressQuery(address) { const value=address.normalize('NFKC').replace(/\s+/g,'').trim(); if(!value) return ''; if(value.includes('神栖市')) return value.startsWith('茨城県') ? value : `茨城県${value}`; if(value.startsWith('茨城県')) return value; return `${APP_CONFIG.geocoder.defaultPrefix || ''}${value}`; }
+function isInsideConfiguredSearchArea(latitude, longitude) { const area=APP_CONFIG.geocoder.searchArea; if(!area) return true; return latitude>=area.south && latitude<=area.north && longitude>=area.west && longitude<=area.east; }
+async function geocodeAddress(address) {
+  if(APP_CONFIG.geocoder.provider!=='gsi' || !APP_CONFIG.geocoder.endpoint) throw new Error('GEOCODER_NOT_CONFIGURED');
+  const query=normalizeAddressQuery(address); if(!query) throw new Error('GEOCODER_EMPTY_QUERY');
+  const url=new URL(APP_CONFIG.geocoder.endpoint); url.searchParams.set('q',query); url.searchParams.set('lang','ja'); url.searchParams.set('zl','T'); url.searchParams.set('ilvl','T'); url.searchParams.set('sort_il','1');
+  const response=await fetch(url.toString(), {headers:{'Accept':'application/json'}, cache:'no-store'}); if(!response.ok) throw new Error('GEOCODER_REQUEST_FAILED');
+  const results=await response.json(); if(!Array.isArray(results) || results.length===0) throw new Error('GEOCODER_NO_RESULTS');
+  const candidates=results.map(item=>{ const coordinates=item?.geometry?.coordinates; const longitude=Number(coordinates?.[0]); const latitude=Number(coordinates?.[1]); if(!Number.isFinite(latitude)||!Number.isFinite(longitude)) return null; return {latitude, longitude, matchedAddress:item?.properties?.title || query}; }).filter(Boolean);
+  const localCandidate=candidates.find(candidate=>isInsideConfiguredSearchArea(candidate.latitude,candidate.longitude)); if(!localCandidate) throw new Error('GEOCODER_OUTSIDE_AREA');
+  return localCandidate;
+}
+addressForm.addEventListener('submit', async event => { event.preventDefault(); const address=addressInput.value.trim(); if(!address){ statusEl.textContent='住所を入力するか、地図上で仮位置を指定してください。'; return; } try { const {latitude,longitude,matchedAddress} = await geocodeAddress(address); const point = latLonToPercent(latitude, longitude); const nearest=getNearestFacilities(latitude, longitude, 3); renderHomeMarker(point.x, point.y); renderNearestFacilities(nearest); focusOnPoints([point, ...nearest.map(f=>({x:f.mapX,y:f.mapY}))]); statusEl.textContent=`「${matchedAddress}」付近から近い3施設を表示しました。`; } catch(error){ if(error.message==='GEOCODER_NOT_CONFIGURED'){ statusEl.textContent='住所検索サービスが設定されていません。'; return; } if(error.message==='GEOCODER_NO_RESULTS'){ statusEl.textContent='住所を特定できませんでした。町名・番地を含めて入力してください。'; return; } if(error.message==='GEOCODER_OUTSIDE_AREA'){ statusEl.textContent='神栖市周辺の住所として確認できませんでした。入力内容をご確認ください。'; return; } console.error(error); statusEl.textContent='住所検索サービスへ接続できませんでした。時間をおいて再度お試しください。'; } });
 
-    <section class="panel search-panel" aria-labelledby="searchTitle">
-      <h2 id="searchTitle">現在地または住所から探す</h2>
-      <div class="location-actions"><button id="currentLocationButton" class="button button-location" type="button">現在地を使う</button><span class="or-text">または</span></div>
-      <form id="addressForm" class="search-form">
-        <label class="sr-only" for="addressInput">住所</label>
-        <input
-          id="addressInput"
-          name="address"
-          type="text"
-          autocomplete="off" autocorrect="off" spellcheck="false"
-          placeholder="例：神栖市神栖○丁目○番○号"
-          required
-        >
-        <button class="button button-primary" type="submit">検索</button>
-      </form>
-      <p id="status" class="status" aria-live="polite">現在地・住所はGitHubへ保存しません。</p>
-      <p class="status">住所検索時は、入力した住所を国土地理院の地名検索APIへ送信して位置を検索します。</p>
-    </section>
+currentLocationButton.addEventListener('click', () => {
+  if (!navigator.geolocation) {
+    statusEl.textContent = 'この端末またはブラウザでは現在地を取得できません。';
+    return;
+  }
 
-    <section class="panel" aria-labelledby="mapTitle">
-      <div class="section-head">
-        <div>
-          <p class="kicker">MAP</p>
-          <h2 id="mapTitle">地図</h2>
-        </div>
-        <div class="map-actions">
-          <button id="zoomOutButton" class="icon-button" type="button" aria-label="縮小">−</button>
-          <button id="zoomInButton" class="icon-button" type="button" aria-label="拡大">＋</button>
-          <button id="resetMapButton" class="button button-subtle" type="button">全体表示</button>
-        </div>
-      </div>
+  currentLocationButton.disabled = true;
+  statusEl.textContent = '現在地を取得しています…';
 
-      <div id="mapViewport" class="map-viewport">
-        <div id="mapStage" class="map-stage">
-          <img id="mapImage" class="map-image" alt="神栖市全図" draggable="false">
-          <div id="facilityMarkerLayer" class="marker-layer" aria-hidden="true"></div>
-          <div id="homeMarkerLayer" class="marker-layer" aria-hidden="true"></div>
-        </div>
-        <div id="mapPlaceholder" class="map-placeholder">
-          <strong>背景地図を待っています</strong>
-          <span>神栖市全図画像と座標範囲を追加すると、ここが地図になります。</span>
-        </div>
-      </div>
-    </section>
+  navigator.geolocation.getCurrentPosition(
+    position => {
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
+      const accuracy = Math.max(1, Math.round(position.coords.accuracy));
+      const point = latLonToPercent(latitude, longitude);
+      const nearest = getNearestFacilities(latitude, longitude, 3);
 
-    <section class="panel" aria-labelledby="nearestTitle">
-      <div class="section-head">
-        <div>
-          <p class="kicker">NEAREST</p>
-          <h2 id="nearestTitle">最寄りの3施設</h2>
-        </div>
-      </div>
-      <div id="nearestList" class="nearest-grid">
-        <p class="empty">現在地または住所を指定すると、近い順に3施設を表示します。</p>
-      </div>
-    </section>
+      renderHomeMarker(point.x, point.y);
+      renderNearestFacilities(nearest);
+      focusOnPoints([point, ...nearest.map(f => ({ x: f.mapX, y: f.mapY }))]);
 
-    <footer class="footer">
-      <p><strong>掲載情報の最終確認日：2026年9月26日</strong></p>
-      <p>施設情報は、神栖市「やさしい福祉 令和8年度版」70〜71ページを参考に作成しています。地図検索で確認できなかった施設は、公開情報を照合して住所を修正しています。</p>
-      <p>背景地図：国土地理院の地図データを加工して作成しています。</p>
-      <p>本アプリは神栖市の公式サービスではありません。距離は直線距離です。最新の指定状況・利用可否・送迎範囲・空き状況は、神栖市または各施設へ確認してください。</p>
-    </footer>
-  </main>
+      statusEl.textContent =
+        `現在地から近い3施設を表示しました（位置精度の目安 ±${accuracy}m）。`;
+      currentLocationButton.disabled = false;
+    },
+    error => {
+      if (error.code === 1) {
+        statusEl.textContent =
+          '現在地の利用が許可されていません。ブラウザまたは端末の位置情報設定をご確認ください。';
+      } else if (error.code === 2) {
+        statusEl.textContent =
+          '現在地を取得できませんでした。通信環境や位置情報設定をご確認ください。';
+      } else if (error.code === 3) {
+        statusEl.textContent =
+          '現在地の取得に時間がかかりすぎました。もう一度お試しください。';
+      } else {
+        statusEl.textContent = '現在地を取得できませんでした。';
+      }
+      currentLocationButton.disabled = false;
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+  );
+});
 
-  <script src="config.js"></script>
-  <script src="facilities.js"></script>
-  <script src="app.js"></script>
-</body>
-</html>
+placeHomeButton.addEventListener('click', () => { placementMode=!placementMode; mapViewport.classList.toggle('placement-mode', placementMode); placementHint.hidden=!placementMode; placeHomeButton.textContent=placementMode ? '位置指定を中止' : '地図上で仮位置を指定'; statusEl.textContent=placementMode ? '地図上の自宅付近をタップしてください。' : '位置指定を中止しました。'; });
+printButton.addEventListener('click', () => window.print()); zoomInButton.addEventListener('click', () => changeZoom(1.3)); zoomOutButton.addEventListener('click', () => changeZoom(1/1.3)); resetMapButton.addEventListener('click', resetMap);
+mapViewport.addEventListener('pointerdown', event => { activePointers.set(event.pointerId, {x:event.clientX, y:event.clientY}); pointerMoved=false; mapViewport.setPointerCapture(event.pointerId); if(activePointers.size===2){ dragState=null; const pts=[...activePointers.values()]; pinchState={distance:Math.hypot(pts[0].x-pts[1].x, pts[0].y-pts[1].y), scale:mapState.scale, x:mapState.x, y:mapState.y}; return; } if(!placementMode && mapState.scale>1){ dragState={pointerId:event.pointerId, startX:event.clientX, startY:event.clientY, originX:mapState.x, originY:mapState.y}; } });
+mapViewport.addEventListener('pointermove', event => { if(!activePointers.has(event.pointerId)) return; const prev=activePointers.get(event.pointerId); if(Math.hypot(event.clientX-prev.x, event.clientY-prev.y)>3) pointerMoved=true; activePointers.set(event.pointerId, {x:event.clientX,y:event.clientY}); if(activePointers.size===2 && pinchState){ const pts=[...activePointers.values()]; const distance=Math.hypot(pts[0].x-pts[1].x, pts[0].y-pts[1].y); if(!pinchState.distance) return; const centerClientX=(pts[0].x+pts[1].x)/2, centerClientY=(pts[0].y+pts[1].y)/2; const rect=mapViewport.getBoundingClientRect(); const centerX=centerClientX-rect.left-baseStage.left, centerY=centerClientY-rect.top-baseStage.top; const nextScale=Math.min(6,Math.max(1,pinchState.scale*distance/pinchState.distance)); const ratio=nextScale/pinchState.scale; mapState.scale=nextScale; mapState.x=centerX-(centerX-mapState.x)*ratio; mapState.y=centerY-(centerY-mapState.y)*ratio; applyMapTransform(); return; } if(dragState && dragState.pointerId===event.pointerId){ mapState.x=dragState.originX + event.clientX - dragState.startX; mapState.y=dragState.originY + event.clientY - dragState.startY; applyMapTransform(); } });
+function endPointer(event) { const wasPlacement = placementMode && !pointerMoved && activePointers.size===1; activePointers.delete(event.pointerId); dragState=null; if(activePointers.size<2) pinchState=null; if(wasPlacement) setHomeFromMap(event.clientX,event.clientY); }
+mapViewport.addEventListener('pointerup', endPointer); mapViewport.addEventListener('pointercancel', endPointer); mapViewport.addEventListener('wheel', event => { event.preventDefault(); const rect=mapViewport.getBoundingClientRect(); changeZoom(event.deltaY<0?1.12:0.9, event.clientX-rect.left, event.clientY-rect.top); }, {passive:false});
+window.addEventListener('resize', layoutMapStage);
+layoutMapStage(); renderFacilityMarkers(); resetMap();
+</script>
+</body></html>
