@@ -177,12 +177,99 @@ function changeZoom(factor, centerX = mapViewport.clientWidth / 2, centerY = map
   applyMapTransform();
 }
 
+function normalizeAddressQuery(address) {
+  const value = address
+    .normalize("NFKC")
+    .replace(/\s+/g, "")
+    .trim();
+
+  if (!value) return "";
+
+  if (value.includes("神栖市")) {
+    return value.startsWith("茨城県") ? value : `茨城県${value}`;
+  }
+
+  if (value.startsWith("茨城県")) {
+    return value;
+  }
+
+  return `${APP_CONFIG.geocoder.defaultPrefix || ""}${value}`;
+}
+
+function isInsideConfiguredSearchArea(latitude, longitude) {
+  const area = APP_CONFIG.geocoder.searchArea;
+  if (!area) return true;
+
+  return (
+    latitude >= area.south &&
+    latitude <= area.north &&
+    longitude >= area.west &&
+    longitude <= area.east
+  );
+}
+
 async function geocodeAddress(address) {
-  if (!APP_CONFIG.geocoder.provider || !APP_CONFIG.geocoder.endpoint) {
+  if (
+    APP_CONFIG.geocoder.provider !== "gsi" ||
+    !APP_CONFIG.geocoder.endpoint
+  ) {
     throw new Error("GEOCODER_NOT_CONFIGURED");
   }
 
-  throw new Error("GEOCODER_NOT_IMPLEMENTED");
+  const query = normalizeAddressQuery(address);
+  if (!query) {
+    throw new Error("GEOCODER_EMPTY_QUERY");
+  }
+
+  const url = new URL(APP_CONFIG.geocoder.endpoint);
+  url.searchParams.set("q", query);
+  url.searchParams.set("lang", "ja");
+  url.searchParams.set("zl", "T");
+  url.searchParams.set("ilvl", "T");
+  url.searchParams.set("sort_il", "1");
+
+  const response = await fetch(url.toString(), {
+    method: "GET",
+    headers: { "Accept": "application/json" },
+    cache: "no-store"
+  });
+
+  if (!response.ok) {
+    throw new Error("GEOCODER_REQUEST_FAILED");
+  }
+
+  const results = await response.json();
+  if (!Array.isArray(results) || results.length === 0) {
+    throw new Error("GEOCODER_NO_RESULTS");
+  }
+
+  const candidates = results
+    .map(item => {
+      const coordinates = item?.geometry?.coordinates;
+      const longitude = Number(coordinates?.[0]);
+      const latitude = Number(coordinates?.[1]);
+
+      if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+        return null;
+      }
+
+      return {
+        latitude,
+        longitude,
+        matchedAddress: item?.properties?.title || query
+      };
+    })
+    .filter(Boolean);
+
+  const localCandidate = candidates.find(candidate =>
+    isInsideConfiguredSearchArea(candidate.latitude, candidate.longitude)
+  );
+
+  if (!localCandidate) {
+    throw new Error("GEOCODER_OUTSIDE_AREA");
+  }
+
+  return localCandidate;
 }
 
 addressForm.addEventListener("submit", async (event) => {
@@ -197,20 +284,33 @@ addressForm.addEventListener("submit", async (event) => {
   statusEl.textContent = "住所を検索しています…";
 
   try {
-    const { latitude, longitude } = await geocodeAddress(address);
+    const { latitude, longitude, matchedAddress } = await geocodeAddress(address);
 
     showNearbyFacilities(latitude, longitude, "検索した住所");
 
-    statusEl.textContent = `「${address}」の周辺施設を表示しました。`;
+    statusEl.textContent =
+      `「${matchedAddress}」付近から近い3施設を表示しました。`;
   } catch (error) {
     if (error.message === "GEOCODER_NOT_CONFIGURED") {
+      statusEl.textContent = "住所検索サービスが設定されていません。";
+      return;
+    }
+
+    if (error.message === "GEOCODER_NO_RESULTS") {
       statusEl.textContent =
-        "画面と距離計算の土台は完成しています。住所検索サービスの接続は次の工程です。";
+        "住所を特定できませんでした。町名・番地を含めて入力してください。";
+      return;
+    }
+
+    if (error.message === "GEOCODER_OUTSIDE_AREA") {
+      statusEl.textContent =
+        "神栖市周辺の住所として確認できませんでした。入力内容をご確認ください。";
       return;
     }
 
     console.error(error);
-    statusEl.textContent = "住所を検索できませんでした。";
+    statusEl.textContent =
+      "住所検索サービスへ接続できませんでした。時間をおいて再度お試しください。";
   }
 });
 
