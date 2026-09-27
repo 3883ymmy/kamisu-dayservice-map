@@ -30,7 +30,7 @@
 <body>
 <main class="app">
 <header class="hero"><div><p class="kicker">神栖市</p><h1>放課後等デイサービス検索</h1><p class="lead">自宅位置と近隣の放課後等デイサービスを地図で確認します。</p><p id="printSearchLabel" class="print-search-label"></p></div><button id="printButton" class="button button-subtle" type="button">印刷</button></header>
-<section class="panel search-panel" aria-labelledby="searchTitle"><h2 id="searchTitle">自宅位置を指定</h2><form id="addressForm" class="search-form"><label class="sr-only" for="addressInput">住所</label><input id="addressInput" name="address" type="text" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="例：神栖市神栖○丁目○番○号"><button class="button button-primary" type="submit">住所検索</button></form><div class="prototype-actions"><button id="currentLocationButton" class="button button-primary" type="button">現在地を使う</button><button id="placeHomeButton" class="button button-accent" type="button">地図から場所を選ぶ</button></div><p class="location-help">住所が分からない場合は、地図上のおおよその場所をタップして検索できます。</p><p id="status" class="status" aria-live="polite">住所検索では入力した住所を国土地理院の地名検索APIへ送信します。GitHubには保存しません。</p></section>
+<section class="panel search-panel" aria-labelledby="searchTitle"><h2 id="searchTitle">自宅位置を指定</h2><form id="addressForm" class="search-form"><label class="sr-only" for="addressInput">住所</label><input id="addressInput" name="address" type="text" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="例：神栖市神栖○丁目○番○号"><button class="button button-primary" type="submit">住所検索</button></form><div class="prototype-actions"><button id="currentLocationButton" class="button button-primary" type="button">現在地を使う</button><button id="placeHomeButton" class="button button-accent" type="button">地図をタップして位置を設定</button></div><p id="locationHelp" class="location-help">住所が分からない場合は、地図上のおおよその位置を直接指定できます。</p><p id="status" class="status" aria-live="polite">住所検索では入力した住所を国土地理院の地名検索APIへ送信します。GitHubには保存しません。</p></section>
 <section class="panel" aria-labelledby="mapTitle"><div class="section-head"><div><p class="kicker">MAP</p><h2 id="mapTitle">地図</h2></div><div class="map-actions"><button id="zoomOutButton" class="icon-button" type="button" aria-label="縮小">−</button><button id="zoomInButton" class="icon-button" type="button" aria-label="拡大">＋</button><button id="resetMapButton" class="button button-subtle" type="button">全体表示</button></div></div>
 <div id="mapViewport" class="map-viewport">
   <div id="mapStage" class="map-stage">
@@ -96,6 +96,7 @@ const printButton = document.getElementById("printButton");
 const printSearchLabel = document.getElementById("printSearchLabel");
 const currentLocationButton = document.getElementById("currentLocationButton");
 const placeHomeButton = document.getElementById("placeHomeButton");
+const locationHelp = document.getElementById("locationHelp");
 const mapViewport = document.getElementById("mapViewport");
 const mapStage = document.getElementById("mapStage");
 const tileLayer = document.getElementById("tileLayer");
@@ -175,7 +176,7 @@ function setCurrentSelection(point, nearest, label) {
   const token=++printPreparationToken;
   buildPrintMap(currentSelection,token).catch(error=>{ if(token!==printPreparationToken) return; console.error(error); printButton.disabled=false; printButton.textContent='印刷'; statusEl.textContent='印刷用地図の準備に失敗しました。通信環境をご確認ください。'; });
 }
-function setHomeFromMap(clientX, clientY) { const point=screenToMapPercent(clientX,clientY); if(point.x<0||point.x>100||point.y<0||point.y>100){ statusEl.textContent='地図の範囲内をタップしてください。'; return; } const {latitude,longitude} = percentToLatLon(point.x, point.y); const nearest=getNearestFacilities(latitude, longitude, 3); renderHomeMarker(point.x, point.y); renderNearestFacilities(nearest); setCurrentSelection(point,nearest,'地図上で指定した位置'); focusOnPoints([point, ...nearest.map(f=>({x:f.mapX,y:f.mapY}))]); placementMode=false; mapViewport.classList.remove('placement-mode'); placementHint.hidden=true; placeHomeButton.textContent='地図から場所を選ぶ'; statusEl.textContent='地図上で指定した位置から最寄り3施設を表示しました。距離は直線距離の概算です。'; }
+function setHomeFromMap(clientX, clientY) { const point=screenToMapPercent(clientX,clientY); if(point.x<0||point.x>100||point.y<0||point.y>100){ statusEl.textContent='地図の範囲内をタップしてください。'; return; } const {latitude,longitude} = percentToLatLon(point.x, point.y); const nearest=getNearestFacilities(latitude, longitude, 3); renderHomeMarker(point.x, point.y); renderNearestFacilities(nearest); setCurrentSelection(point,nearest,'地図上で指定した位置'); focusOnPoints([point, ...nearest.map(f=>({x:f.mapX,y:f.mapY}))]); placementMode=false; mapViewport.classList.remove('placement-mode'); placementHint.hidden=true; placeHomeButton.textContent=`地図を${placementActionWord()}して位置を設定`; statusEl.textContent='地図上で指定した位置から最寄り3施設を表示しました。距離は直線距離の概算です。'; }
 function normalizeAddressQuery(address) { const value=address.normalize('NFKC').replace(/\s+/g,'').trim(); if(!value) return ''; if(value.includes('神栖市')) return value.startsWith('茨城県') ? value : `茨城県${value}`; if(value.startsWith('茨城県')) return value; return `${APP_CONFIG.geocoder.defaultPrefix || ''}${value}`; }
 function isInsideConfiguredSearchArea(latitude, longitude) { const area=APP_CONFIG.geocoder.searchArea; if(!area) return true; return latitude>=area.south && latitude<=area.north && longitude>=area.west && longitude<=area.east; }
 async function geocodeAddress(address) {
@@ -235,7 +236,14 @@ currentLocationButton.addEventListener('click', () => {
   );
 });
 
-placeHomeButton.addEventListener('click', () => { placementMode=!placementMode; mapViewport.classList.toggle('placement-mode', placementMode); placementHint.hidden=!placementMode; placeHomeButton.textContent=placementMode ? '場所選択を中止' : '地図から場所を選ぶ'; statusEl.textContent=placementMode ? '地図をタップすると、その地点から近い3施設を表示します。' : '場所の選択を中止しました。'; });
+function placementActionWord() { return window.matchMedia('(hover:hover) and (pointer:fine)').matches ? 'クリック' : 'タップ'; }
+function updatePlacementWording() {
+  const action=placementActionWord();
+  if(!placementMode) placeHomeButton.textContent=`地図を${action}して位置を設定`;
+  locationHelp.textContent=`住所が分からない場合は、地図上のおおよその位置を${action}して指定できます。`;
+  placementHint.textContent=`地図上の自宅・基準地点を${action}`;
+}
+placeHomeButton.addEventListener('click', () => { placementMode=!placementMode; mapViewport.classList.toggle('placement-mode', placementMode); placementHint.hidden=!placementMode; const action=placementActionWord(); placeHomeButton.textContent=placementMode ? '位置設定を中止' : `地図を${action}して位置を設定`; statusEl.textContent=placementMode ? `地図上で基準にしたい地点を${action}してください。その地点から近い3施設を表示します。` : '位置設定を中止しました。'; });
 printButton.addEventListener('click', () => {
   if(!currentSelection){ statusEl.textContent='先に住所・現在地・地図上の位置のいずれかを指定してください。'; return; }
   if(!printImageReady){ statusEl.textContent='印刷用地図を準備しています。少し待ってからもう一度押してください。'; return; }
@@ -247,7 +255,7 @@ mapViewport.addEventListener('pointermove', event => { if(!activePointers.has(ev
 function endPointer(event) { const wasPlacement = placementMode && !pointerMoved && activePointers.size===1; activePointers.delete(event.pointerId); dragState=null; if(activePointers.size<2) pinchState=null; if(wasPlacement) setHomeFromMap(event.clientX,event.clientY); }
 mapViewport.addEventListener('pointerup', endPointer); mapViewport.addEventListener('pointercancel', endPointer); mapViewport.addEventListener('wheel', event => { event.preventDefault(); const rect=mapViewport.getBoundingClientRect(); changeZoom(event.deltaY<0?1.12:0.9, event.clientX-rect.left, event.clientY-rect.top); }, {passive:false});
 window.addEventListener('resize', layoutMapStage);
-layoutMapStage(); renderFacilityMarkers(); resetMap();
+layoutMapStage(); renderFacilityMarkers(); resetMap(); updatePlacementWording();
 printButton.disabled=false;
 </script>
 </body></html>
